@@ -1,0 +1,195 @@
+/* ============================================================
+   Skins — complete design systems layered over the base reader.
+   Switched via .app[data-skin="…"]. Base (= "literary") needs no
+   block. Each skin overrides type, shape, labels & signature feel;
+   the 4 reading themes (paper/sepia/dark/oled) keep working under all.
+   Accent is set per-skin from JS so each look reads distinct on switch.
+   ============================================================ */
+
+/* shared title + label selector groups are repeated per skin so each
+   block is self-contained and easy to tweak independently. */
+
+/* ───────────────────────── EDITORIAL ─────────────────────────
+   Swiss/brutalist magazine: grotesk, hard edges, heavy labels. */
+.app[data-skin="editorial"] {
+  --serif: 'Spectral', Georgia, serif;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+.app[data-skin="editorial"] .chap-title,
+.app[data-skin="editorial"] .lib-title,
+.app[data-skin="editorial"] .dh-title,
+.app[data-skin="editorial"] .bk-name,
+.app[data-skin="editorial"] .lib-empty-t,
+.app[data-skin="editorial"] .ct,
+.app[data-skin="editorial"] .vs-t {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: -0.03em;
+}
+.app[data-skin="editorial"] .chap-title { line-height: 1.0; }
+.app[data-skin="editorial"] .chap-eyebrow,
+.app[data-skin="editorial"] .lib-eyebrow,
+.app[data-skin="editorial"] .bk-author,
+.app[data-skin="editorial"] .pop-title,
+.app[data-skin="editorial"] .scene-label,
+.app[data-skin="editorial"] .lib-sec-label {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: .12em;
+}
+.app[data-skin="editorial"] .bk-cover { border-radius: 1px; }
+.app[data-skin="editorial"] .dock { border-radius: 3px; border-width: 1.5px; }
+.app[data-skin="editorial"] .dock-col.attached .dock { border-radius: 3px 3px 0 0; }
+.app[data-skin="editorial"] .panel,
+.app[data-skin="editorial"] .inline-pop,
+.app[data-skin="editorial"] .add-sheet,
+.app[data-skin="editorial"] .statcard,
+.app[data-skin="editorial"] .scene,
+.app[data-skin="editorial"] .letter,
+.app[data-skin="editorial"] .delta,
+.app[data-skin="editorial"] .journey,
+.app[data-skin="editorial"] .eta,
+.app[data-skin="editorial"] .eta-pill,
+.app[data-skin="editorial"] .lib-add { border-radius: 3px; }
+.app[data-skin="editorial"] .ib,
+.app[data-skin="editorial"] .bk-ic,
+.app[data-skin="editorial"] .vbtn,
+.app[data-skin="editorial"] .chip-f,
+.app[data-skin="editorial"] .crow,
+.app[data-skin="editorial"] .theme-card,
+.app[data-skin="editorial"] .swatch,
+.app[data-skin="editorial"] .seg,
+.app[data-skin="editorial"] .seg button,
+.app[data-skin="editorial"] .stepper,
+.app[data-skin="editorial"] .stepper button,
+.app[data-skin="editorial"] .vselect-btn { border-radius: 2px; }
+.app[data-skin="editorial"] .dock-fill,
+.app[data-skin="editorial"] .bk-prog .bar i,
+.app[data-skin="editorial"] .dock-track { border-radius: 0; }
+
+/* ───────────────────────── MINIMAL ─────────────────────────
+   Calm modern product: soft sans + clean serif, generous radii. */
+.app[data-skin="minimal"] {
+  --serif: 'Literata', Georgia, serif;
+  font-family: 'Figtree', system-ui, sans-serif;
+}
+.app[data-skin="minimal"] .chap-title,
+.app[data-skin="minimal"] .lib-title,
+.app[data-skin="minimal"] .dh-title,
+.app[data-skin="minimal"] .lib-empty-t {
+  font-family: 'Figtree', sans-serif; font-weight: 600; letter-spacing: -0.025em;
+}
+.app[data-skin="minimal"] .chap-eyebrow,
+.app[data-skin="minimal"] .lib-eyebrow,
+.app[data-skin="minimal"] .bk-author,
+.app[data-skin="minimal"] .pop-title,
+.app[data-skin="minimal"] .scene-label,
+.app[data-skin="minimal"] .lib-sec-label {
+  font-family: 'Figtree', sans-serif; font-weight: 600; letter-spacing: .1em;
+}
+.app[data-skin="minimal"] .bk-cover { border-radius: 14px; }
+.app[data-skin="minimal"] .bk-cover::before,
+.app[data-skin="minimal"] .bk-cover::after { opacity: .4; }
+.app[data-skin="minimal"] .panel,
+.app[data-skin="minimal"] .inline-pop,
+.app[data-skin="minimal"] .add-sheet { border-radius: 24px; }
+.app[data-skin="minimal"] .statcard,
+.app[data-skin="minimal"] .scene,
+.app[data-skin="minimal"] .letter,
+.app[data-skin="minimal"] .delta,
+.app[data-skin="minimal"] .journey,
+.app[data-skin="minimal"] .eta { border-radius: 20px; }
+.app[data-skin="minimal"] .crow { border-radius: 14px; }
+.app[data-skin="minimal"] .lib-add,
+.app[data-skin="minimal"] .add-cta,
+.app[data-skin="minimal"] .eta-pill { border-radius: 999px; }
+
+/* ───────────────────────── ANTIQUARIAN ─────────────────────────
+   Old-world press: high-contrast display serif, ornament, oxblood. */
+.app[data-skin="antiquarian"] {
+  --serif: 'Spectral', Georgia, serif;
+  font-family: 'Spectral', Georgia, serif;
+}
+.app[data-skin="antiquarian"] .chap-title,
+.app[data-skin="antiquarian"] .lib-title,
+.app[data-skin="antiquarian"] .dh-title,
+.app[data-skin="antiquarian"] .bk-name,
+.app[data-skin="antiquarian"] .sc-name,
+.app[data-skin="antiquarian"] .lib-empty-t {
+  font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; letter-spacing: 0;
+}
+.app[data-skin="antiquarian"] .chap-eyebrow,
+.app[data-skin="antiquarian"] .lib-eyebrow,
+.app[data-skin="antiquarian"] .bk-author,
+.app[data-skin="antiquarian"] .pop-title,
+.app[data-skin="antiquarian"] .scene-label,
+.app[data-skin="antiquarian"] .lib-sec-label {
+  font-family: 'DM Serif Display', serif; font-style: italic; font-weight: 400;
+  text-transform: none; letter-spacing: .01em; font-size: 1.18em;
+}
+.app[data-skin="antiquarian"] .chap-meta,
+.app[data-skin="antiquarian"] .lib-count { font-style: italic; }
+.app[data-skin="antiquarian"] .prose.dropcap > p:first-of-type::first-letter {
+  font-size: 4.1em; padding: 8px 14px 0 2px; color: var(--accent); }
+.app[data-skin="antiquarian"] .bk-cover { border-radius: 4px 9px 9px 4px; }
+.app[data-skin="antiquarian"] .dock,
+.app[data-skin="antiquarian"] .panel,
+.app[data-skin="antiquarian"] .inline-pop,
+.app[data-skin="antiquarian"] .add-sheet,
+.app[data-skin="antiquarian"] .statcard,
+.app[data-skin="antiquarian"] .scene,
+.app[data-skin="antiquarian"] .letter,
+.app[data-skin="antiquarian"] .eta-pill { border-radius: 6px; }
+.app[data-skin="antiquarian"] .scenebreak::before { content: "❦  "; }
+.app[data-skin="antiquarian"] .scenebreak::after { content: "  ❦"; }
+
+/* ───────────────────────── MONO ─────────────────────────
+   Terminal / technical: IBM Plex Mono + Serif, sharp grid. */
+.app[data-skin="mono"] {
+  --serif: 'IBM Plex Serif', Georgia, serif;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+.app[data-skin="mono"] .chap-title,
+.app[data-skin="mono"] .lib-title,
+.app[data-skin="mono"] .dh-title,
+.app[data-skin="mono"] .bk-name,
+.app[data-skin="mono"] .lib-empty-t,
+.app[data-skin="mono"] .ct,
+.app[data-skin="mono"] .vs-t {
+  font-family: 'IBM Plex Mono', monospace; font-weight: 500; letter-spacing: -0.02em;
+}
+.app[data-skin="mono"] .chap-eyebrow,
+.app[data-skin="mono"] .lib-eyebrow,
+.app[data-skin="mono"] .bk-author,
+.app[data-skin="mono"] .pop-title,
+.app[data-skin="mono"] .scene-label,
+.app[data-skin="mono"] .lib-sec-label {
+  font-family: 'IBM Plex Mono', monospace; font-weight: 600; letter-spacing: .14em;
+}
+.app[data-skin="mono"] .chap-eyebrow::before,
+.app[data-skin="mono"] .lib-eyebrow::before { content: "// "; opacity: .7; }
+.app[data-skin="mono"] .chap-meta::before { content: "~ "; }
+.app[data-skin="mono"] .bk-cover { border-radius: 2px; }
+.app[data-skin="mono"] .dock { border-radius: 4px; }
+.app[data-skin="mono"] .dock-col.attached .dock { border-radius: 4px 4px 0 0; }
+.app[data-skin="mono"] .panel,
+.app[data-skin="mono"] .inline-pop,
+.app[data-skin="mono"] .add-sheet,
+.app[data-skin="mono"] .statcard,
+.app[data-skin="mono"] .scene,
+.app[data-skin="mono"] .letter,
+.app[data-skin="mono"] .delta,
+.app[data-skin="mono"] .journey,
+.app[data-skin="mono"] .eta,
+.app[data-skin="mono"] .eta-pill,
+.app[data-skin="mono"] .lib-add { border-radius: 3px; }
+.app[data-skin="mono"] .ib,
+.app[data-skin="mono"] .bk-ic,
+.app[data-skin="mono"] .vbtn,
+.app[data-skin="mono"] .crow,
+.app[data-skin="mono"] .chip-f,
+.app[data-skin="mono"] .theme-card,
+.app[data-skin="mono"] .swatch,
+.app[data-skin="mono"] .seg,
+.app[data-skin="mono"] .stepper,
+.app[data-skin="mono"] .vselect-btn { border-radius: 3px; }
+.app[data-skin="mono"] .dock-fill,
+.app[data-skin="mono"] .dock-track,
+.app[data-skin="mono"] .bk-prog .bar,
+.app[data-skin="mono"] .bk-prog .bar i { border-radius: 0; }
