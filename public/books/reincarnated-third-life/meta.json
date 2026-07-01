@@ -3,5 +3,33 @@
   "title": "Reincarnated Into My Third Life: Watch Me Defy the Fate",
   "author": "Unknown",
   "tint": "#5b3a6b",
-  "characters": {}
+  "characters": {
+    "veythor": {
+      "name": "Veythor",
+      "epithet": "A twice-dead soul, calculating and cold",
+      "initials": "V",
+      "gender": "m",
+      "aliases": ["Veythor"],
+      "desc": "Reincarnated for a third time with the memories of two prior lives. Coldly pragmatic and a master of manufactured sincerity, he treats emotion — his own and others' — as a lever to be pulled.",
+      "stats": [["Composure", 9], ["Cunning", 9], ["Warmth", 2]]
+    },
+    "shimi": {
+      "name": "Shimi",
+      "epithet": "A-ranked mage talent, nine years old",
+      "initials": "S",
+      "gender": "f",
+      "aliases": ["Shimi"],
+      "desc": "Kind, direct, and quick to defend the people around her, even when she has every reason not to trust them.",
+      "stats": [["Kindness", 8], ["Resolve", 7], ["Suspicion", 3]]
+    },
+    "raika": {
+      "name": "Raika",
+      "epithet": "Seven years old, magic not yet awakened",
+      "initials": "R",
+      "gender": "m",
+      "aliases": ["Raika"],
+      "desc": "Guarded and quick to suspect strangers, with a quiet devotion to Shimi he hasn't fully admitted to himself.",
+      "stats": [["Suspicion", 7], ["Loyalty", 8], ["Patience", 3]]
+    }
+  }
 }

@@ -16,6 +16,11 @@ export default function BookCard({ book, onRemove }) {
   return (
     <Link href={`/book/${book.id}`} className="bk">
       <div className="bk-cover" style={{ '--bk': book.tint }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="bk-img" src={`/books/${book.id}/images/cover.jpg`} alt={book.title + ' cover'}
+          ref={(el) => { if (el && el.complete && el.naturalWidth > 0) el.parentNode.classList.add('hasimg'); }}
+          onLoad={(e) => e.currentTarget.parentNode.classList.add('hasimg')}
+          onError={(e) => e.currentTarget.remove()} />
         <div className="bk-controls">
           <button
             className="bk-ic bk-rm"

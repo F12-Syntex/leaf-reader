@@ -118,6 +118,11 @@ export default function LibraryView({ initialBooks }) {
                   <Link href={`/book/${heroBook.id}`} className="lib-hero">
                     <div className="lib-hero-coverwrap">
                       <div className="bk-cover" style={{ '--bk': heroBook.tint }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img className="bk-img" src={`/books/${heroBook.id}/images/cover.jpg`} alt={heroBook.title + ' cover'}
+                          ref={(el) => { if (el && el.complete && el.naturalWidth > 0) el.parentNode.classList.add('hasimg'); }}
+                          onLoad={(e) => e.currentTarget.parentNode.classList.add('hasimg')}
+                          onError={(e) => e.currentTarget.remove()} />
                         <div className="bk-author">{heroBook.author}</div>
                         <div className="bk-name">{heroBook.title}</div>
                         <div className="bk-orn">{heroBook.title[0]}</div>
