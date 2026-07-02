@@ -1,0 +1,105 @@
+{
+  "n": "Chapter 18",
+  "title": "Into the Eternal Forest of Darkness",
+  "rel": 7,
+  "blocks": [
+    "Raika turned to Miasha, his gaze steady.",
+    {
+      "t": "statcard",
+      "char": "raika"
+    },
+    "{say:raika} \"What are you going to do now?\"",
+    "Miasha met his eyes without hesitation.",
+    "\"Of course, I'm going to save other forced slaves like you three. Slavery itself isn't illegal, but abducting someone and then forcing them into it is a crime. But before we go any further, let's introduce ourselves.\"",
+    "She placed a hand on her chest and smiled lightly.",
+    "\"I'm Miasha. What about you?\"",
+    "Veythor's crimson eyes glimmered faintly.",
+    {
+      "t": "statcard",
+      "char": "veythor"
+    },
+    "\"I'm Veythor, and these two are Shimi and Raika. Now that introductions are done, may I ask you a question?\"",
+    "His words caught Shimi and Miasha off guard. Shimi blinked in surprise, while Raika, already attuned to Veythor's intentions, remained calm. Miasha chuckled softly, masking her unease.",
+    {
+      "t": "statcard",
+      "char": "shimi"
+    },
+    "{say:shimi} \"Yes... what question does our little Veythor have?\"",
+    "Veythor tilted his head slightly, a sinister smile creeping across his lips. The sight made Miasha's skin prickle.",
+    "\"Who sent you to save us... abducted, forced slaves?\"",
+    "For the first time, Miasha's careful tone wavered slightly. She chose her words with caution.",
+    "\"The empire's higher-ups. I have special orders from the royal capital, Kranel. The order was issued by the Emperor of Narzan himself.\"",
+    "Shimi gasped, her eyes widening in shock. Raika and Veythor, however, did not flinch. They had already understood her words were an obvious lie.",
+    "\"Oh, is that so? That's good. The Emperor of this kingdom must be very kind.\"",
+    "Veythor's words were slow, deliberate.",
+    "\"Of course,\" Miasha replied smoothly.",
+    "Veythor tilted his head.",
+    "\"So, Big Sis Miasha... can you tell me exactly where we are? And what lies beyond this tunnel?\"",
+    "Miasha smirked at the question.",
+    "\"We're very close to one of Narzan's infamous places, the most dangerous forest in the entire empire. The Eternal Forest of Darkness.\"",
+    "Veythor's gaze narrowed.",
+    "Eternal Forest of Darkness... what a strange name, he thought silently.",
+    {
+      "say": "raika"
+    },
+    " \"Do we have to cross paths with this forest?\"",
+    "Miasha laughed softly, almost mocking.",
+    "\"Cross paths? To reach any city, you'll have to cross the entire forest.\"",
+    "A cold shiver crept down Raika and Shimi's spines. Shimi tried to mask her fear with a trembling smile.",
+    {
+      "say": "shimi"
+    },
+    " \"But... Big Sis Miasha will save us, right? You'll help us cross that cursed forest?\"",
+    "Veythor raised an eyebrow.",
+    "That's a nice idea. If she could handle Bulz and his men, then she's very strong. But she won't help. She'll definitely back off.",
+    "Miasha's tone turned apologetic, but her eyes betrayed her indifference.",
+    "\"Sorry, Shimi... I'm really sorry. I can't escort you anywhere. My path leads elsewhere, and there will be too many dangers along the way. You three will have to cross the forest on your own.\"",
+    "Veythor's lips curved into the faintest smile.",
+    "Just as I predicted.",
+    "He leaned forward slightly.",
+    "\\\"I've got another question.\\",
+    "",
+    "Miasha's inner thoughts darkened.",
+    "Tch... this brat doesn't know when to stop.",
+    "Outwardly, her smile remained bright and flawless.",
+    "\"Yes, of course. Ask whatever you want.\"",
+    "Veythor's crimson eyes gleamed.",
+    "\"If the Emperor of Narzan himself sent you to save abducted children like us... where are your subordinates? Don't tell me you're planning to save everyone all alone.\"",
+    "It's not going to work, brat. You're too little to play games with me, Miasha thought, hiding her irritation.",
+    "Out loud, her voice was warm, steady.",
+    "\"I do have subordinates. They've all gone down paths assigned by the Emperor. I'm on my own mission now. Narzan is a very big empire, as you know.\"",
+    "Her smile never wavered.",
+    "\"But let me warn you about the forest. It's a dangerous place. Many kinds of beasts dwell there... deadly ones. An encounter with them would almost certainly cost you your life. You three are clever children... I trust you understand what I mean.\"",
+    "Raika and Shimi stiffened, fear flickering in their eyes. But Veythor's expression remained calm. He had seen worse.",
+    "\"And there are no humans in that forest, correct?\" Veythor asked flatly.",
+    {
+      "say": "raika"
+    },
+    " \"Come on, how could any human live in such a cursed place?\"",
+    "\"Actually... there are,\" Miasha said slowly.",
+    {
+      "say": "shimi"
+    },
+    " \"What?!\"",
+    "{say:shimi} \"Impossible! How could there be?\"",
+    "Raika pressed, his voice full of disbelief. Veythor's crimson gaze narrowed, glinting with interest. Not normal humans? Interesting...",
+    "\"There are indeed humans who dwell there,\" Miasha said, her eyes darkened, her tone turning low. \"But they aren't normal humans. Many call them the true kings of the Eternal Forest of Darkness. In easier words Tribespeople, Primitive... ruthless. They have clashed with Narzan's armies many times, and every attempt to subjugate them ended in blood. Though in the end, they were crushed by Narzan's forces brutally.\"",
+    "\"And how many tribes exist in that forest?\" he asked.",
+    "\"I don't know exactly,\" Miasha admitted. \"There could be one, five, ten... or more. But regardless of number, their strength is undeniable and their unity is... admirable.\"",
+    "\"I see... One more question,\" Veythor said. Shimi and Raika leaned closer, curiosity piqued.",
+    "\"Go ahead,\" Miasha said, smiling with perfect calm.",
+    "\"Is there any record of cannibalism among them? Any evidence they practice it?\"",
+    "Miasha's eyebrows arched.",
+    "\"You know what cannibalism is? That's... unexpected.\" She tilted her head. \"And perhaps. There have been complaints, whispers. But no one ever proved it true.\"",
+    "Shimi and Raika blinked, utterly lost.",
+    {
+      "say": "shimi"
+    },
+    " \"What's cannibalism, Vey?\"",
+    "\"You don't want to know, Shimi,\" Miasha cut in quickly, her tone firm.",
+    "\"...Okay.\" Shimi murmured, still confused, but quiet.",
+    "I would rather kill this woman here and now. Left alive, she will only return later as a far greater trouble. If I had the strength, I would not hesitate but power is still beyond me. Until I reach a city, until I grasp true strength I can only endure.",
+    "Meanwhile, Miasha's lips curved faintly, in the shadows of her heart, her laughter was cold and venomous.",
+    "Let's guide them to hell, she thought, a cruel glint flashing in her eyes for just an instant before her mask of kindness returned."
+  ]
+}

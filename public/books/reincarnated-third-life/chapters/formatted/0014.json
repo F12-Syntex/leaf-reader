@@ -1,0 +1,85 @@
+{
+  "n": "Chapter 14",
+  "title": "Crack",
+  "rel": 8,
+  "blocks": [
+    "\"People are like mountains; from afar they seem still and unchanging, but up close you see the scars of storms, the rivers that carved their patience, and the quiet strength that lets them touch the sky.\"",
+    "Shimi hurled the newly charged Air Bomb forward, her hands trembling but to Veythor, the world was dissolving into haze, edges blurring, strength slipping.",
+    {
+      "t": "statcard",
+      "char": "Veythor"
+    },
+    "He bit down hard on his own finger, the sting dragging him back from the edge, grounding him in pain. With his other hand, he snatched the bomb out of the air. The monster’s screams still split the cavern... razors of sound tearing at his skull, turning every breath into agony.",
+    "Veythor’s lips twisted into a bloody smile.",
+    {
+      "say": "Veythor",
+      "text": "\"Bye-bye, you cunning bastard. May your grave be hell itself.\""
+    },
+    "He hurled the glowing sphere into its gaping maw.",
+    {
+      "scream": "BOOOOOOM!"
+    },
+    "Flames swallowed its throat, ripping through flesh. The stench of charred meat thickened the air, mingling with the iron tang of blood pouring from its blasted mouth.",
+    "The monster convulsed, spasms shaking its grotesque frame then, at last, it collapsed. Its carcass sprawled across the ground, motionless. Like a ticket stamped and sent straight to hell.",
+    "Veythor stood, swaying on unsteady legs, the battlefield silent except for the crackle of burning flesh. Shimi and Raika, still breathless, felt a fragile spark of relief.",
+    {
+      "say": "Shimi",
+      "text": "\"Vey you... you did it! We did it.... we won!\""
+    },
+    {
+      "say": "Raika",
+      "text": "\"Yeah!\" Raika shouted, almost laughing. \"We did it, Veythor! Let’s go... now we can finally escape!\""
+    },
+    "But Veythor gave no reply. His breaths came heavy, each one heavier than the last. His hand clutched his chest tightly, blood soaking his fingers. A warmth filled his throat and with a violent cough, he vomited blood onto the floor.",
+    {
+      "say": "Shimi",
+      "text": "\"Vey!\" Shimi shrieked, rushing to his side. Her voice shook with panic."
+    },
+    {
+      "say": "Shimi",
+      "text": "\"Are you.... are you injured?!\""
+    },
+    "Raika dropped beside him, fury and fear colliding in his chest. He grabbed Veythor by the collar, teeth grinding.",
+    {
+      "say": "Raika",
+      "text": "\"Hey, Veythor! You bastard, you can’t die yet! You promised us you swore you’d find a way out of this damned place! You shitty genius, you don’t get to just die and run away like a coward!\""
+    },
+    "Even as he cursed, Raika’s grip trembled. His heart screamed against his words. Deep down, despite all the resentment, he had started to see Veythor as something more maybe even a friend.",
+    "Shimi’s eyes shone, tears gathering but refusing to fall. But to Veythor, their voices were already fading, distant echoes drowned by the darkness closing in.",
+    "Fuck... not again this fate, this curse... will never stop messing with me. Once more, I’m dying.",
+    "The darkness swallowed him whole not death yet, but the path to it. Suddenly, a chill ran down their spines. Shimi and Raika turned, their eyes widening in pure horror.",
+    "The monster stood again. Its ruined body staggered, its only surviving eye fixed on them burning with a grotesque will to live.",
+    "Whoosh... whoosh...",
+    "Each ragged breath scraped out from its blasted throat, echoing like the rattle of a dying beast. That single eye was no longer filled with bloodlust but something far more primal fear.",
+    {
+      "say": "Raika",
+      "text": "\"Impossible... how is this thing still alive?\" Raika muttered, his voice trembling."
+    },
+    "The creature’s jaw opened and closed, teeth clashing together in a grotesque rhythm.",
+    "Clack... Clack... Clack",
+    "Then, with a sudden lurch, it turned back and fled. Not like a predator retreating, but like a rat scurrying from fire. For all its strength, all its savagery, it still bowed to the oldest truth: every creature fears death.",
+    "Shimi and Raika stood frozen in shock. They had expected another clash, another fight to the death not this pathetic retreat. By then, Veythor had already collapsed. His breaths shallow, his body heavy. Darkness swallowed his vision.",
+    {
+      "t": "scene",
+      "fx": "rain",
+      "x": "Suddenly he opened his eyes to a world without light. Rain pattered down, though no sky could be seen. His body glowed faintly, a dying lantern within endless night."
+    },
+    "And then, an image surfaced before him...",
+    "A boy, kneeling before a corpse in a bed. The woman’s skin was pale, her beauty long withered by death.",
+    "The boy’s voice cracked, his cries tearing through the void.",
+    "\"Mother... no, no, you can’t leave me! Please... please talk to me! I’ll be good, I’ll do anything.... just don’t leave me! I can’t... I can’t live without you!\"",
+    "His screams were filled with despair to Veythor, they rang unbearably familiar, as if echoing from the deepest chamber of his own soul.",
+    "The woman’s face slowly came into focus. The clearer it became, the wider Veythor’s eyes grew, his breath catching in his throat. His lips parted before he could stop himself, the word spilling out like a wound reopening...",
+    {
+      "say": "Veythor",
+      "text": "\"...Mother.\""
+    },
+    "Tears slid down his hardened face. The cold, calculating Veythor was gone; in his place stood a broken child, reaching out with trembling hands.",
+    {
+      "say": "Veythor",
+      "text": "\"Mother... Mother...\""
+    },
+    "He stepped forward, desperate, but the closer he drew, the more the vision dissolved. The woman, the boy, the entire scene disintegrated into nothingness until all that remained was silence.",
+    "And still, Veythor wept. His sobs were voiceless, yet they shook him to his core. Then, as the void swallowed his grief, another vision began to emerge before him..."
+  ]
+}

@@ -68,6 +68,7 @@ export default function ReaderView({ book }) {
   const spreadPagesRef = useRef(1);
   const spreadPageRef = useRef(0);
   const pendingChap = useRef(null);
+  const formatRequestedRef = useRef(new Set());
   const spread = pageMode === 'spread' && wide;
 
   /* declared up front (rather than interleaved with the effects below) so every
@@ -321,6 +322,27 @@ export default function ReaderView({ book }) {
     const h = setTimeout(() => setHintMsg(null), 4000);
     return () => clearTimeout(h);
   }, [mounted]);
+
+  /* progressively format the next few unformatted chapters ahead of where the
+     reader actually is, instead of requiring the whole book to be formatted
+     up front — each request is a single fast direct OpenRouter call. */
+  useEffect(() => {
+    if (!mounted) return;
+    const upcoming = book.chapters
+      .slice(cur + 1, cur + 6)
+      .filter((c) => c.unformatted && c.stem && !formatRequestedRef.current.has(c.stem));
+    if (!upcoming.length) return;
+    upcoming.forEach((c) => formatRequestedRef.current.add(c.stem));
+    Promise.all(upcoming.map((c) =>
+      fetch('/api/format-chapter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId, stem: c.stem }),
+      }).then((r) => r.json()).catch(() => null)
+    )).then((results) => {
+      if (results.some((r) => r && r.ok)) router.refresh();
+    });
+  }, [mounted, cur, book.chapters, bookId, router]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 900px)');
@@ -616,6 +638,7 @@ export default function ReaderView({ book }) {
               <h2 className="chap-title">{c.title}</h2>
               <div className="chap-metarow">
                 <span className="chap-meta">{readTime(c)} min read</span>
+                {c.unformatted && <span className="chap-unformatted">Formatting…</span>}
                 {(() => {
                   const s = c.rel != null ? c.rel : relScore(bookId, i), m = relMeta(s), h = relHeat(s);
                   return (
