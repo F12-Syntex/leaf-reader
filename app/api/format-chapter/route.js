@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { formatChapterViaOpenRouter } from '@/lib/openrouter';
+import { normalizeBlocks } from '@/lib/normalizeBlocks';
 
 const BOOKS_DIR = path.join(process.cwd(), 'public', 'books');
 
@@ -34,6 +35,7 @@ export async function POST(req) {
 
   try {
     const formatted = await formatChapterViaOpenRouter(original, meta.characters);
+    formatted.blocks = normalizeBlocks(formatted.blocks);
     await mkdir(path.dirname(formattedPath), { recursive: true });
     await writeFile(formattedPath, JSON.stringify(formatted, null, 2), 'utf8');
     return NextResponse.json({ ok: true });
