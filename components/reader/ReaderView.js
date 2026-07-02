@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useLayoutEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { FONTS, MEASURES, APP_DEFAULTS, relScore, relMeta, relHeat } from '@/lib/constants';
-import { loadGlobal, saveGlobal, loadBook, saveBook, readTime } from '@/lib/storage';
+import { loadGlobal, saveGlobal, loadBook, saveBook, readTime, wordsOfBlocks } from '@/lib/storage';
 import { buildCharIndex, computeMentions, assignHues, computeDialogue, cleanText, renderProse } from '@/lib/richtext';
 import {
   SceneBreak, Timeskip, QuoteBlock, SceneBlock, DeltaCard, JourneyCard,
@@ -68,6 +68,8 @@ export default function ReaderView({ book }) {
   const spreadPagesRef = useRef(1);
   const spreadPageRef = useRef(0);
   const pendingChap = useRef(null);
+  const pendingScrollRef = useRef(null);
+  const [chapHeights, setChapHeights] = useState({});
   const formatRequestedRef = useRef(new Set());
   const spread = pageMode === 'spread' && wide;
 
@@ -103,7 +105,7 @@ export default function ReaderView({ book }) {
     saveT.current = setTimeout(() => {
       const max2 = el.scrollHeight - el.clientHeight;
       const st = loadBook(bookId);
-      saveBook(bookId, { ...st, marks, scrollY: y, overall: max2 > 0 ? y / max2 : 0, at: Date.now() });
+      saveBook(bookId, { ...st, marks, chap: ci, chapProgress: pr, overall: max2 > 0 ? y / max2 : 0, at: Date.now() });
     }, 300);
   };
 
@@ -115,8 +117,15 @@ export default function ReaderView({ book }) {
       setPage(pg); applyPage(pg, spRef.current); updateFromPage(pg);
       return;
     }
-    const el = stageRef.current; const sec = secRefs.current[i];
-    if (el && sec) el.scrollTo({ top: sec.offsetTop - 12, behavior: 'smooth' });
+    /* chapter i may currently be a lazy placeholder (outside the render window) —
+       expand it first via setCur, then scroll once the layout effect below has
+       committed the real content, so we land exactly on its top edge. Jumping
+       instantly (not smooth) matters here: an animated scroll across many
+       chapters sweeps `cur` through every chapter in between, each shifting the
+       render window and reflowing the document mid-animation, which drags the
+       final landing spot off target. */
+    setCur(i);
+    pendingScrollRef.current = { chap: i, progress: 0, smooth: false };
   };
 
   /* ======================= two-page spread ======================= */
@@ -275,17 +284,53 @@ export default function ReaderView({ book }) {
     saveBook(bookId, { ...st, read: readSet, at: Date.now() });
   }, [readSet, bookId, mounted]);
 
-  /* restore scroll position once mounted */
+  /* restore scroll position once mounted — stored as {chap, chapProgress} rather
+     than a raw pixel offset, since with windowed rendering the pixel height of
+     the document depends on which chapters happen to be expanded. */
+  /* eslint-disable react-hooks/set-state-in-effect -- one-time client-only
+     hydration of localStorage-derived reading position (same rationale as the
+     mount effect above) */
   useLayoutEffect(() => {
     if (!mounted) return;
     secRefs.current.length = book.chapters.length;
     if (spread) return;
-    const el = stageRef.current; if (!el) return;
-    const y = loadBook(bookId).scrollY || 0;
-    el.scrollTop = y; lastY.current = y;
-    requestAnimationFrame(() => onScroll());
+    const saved = loadBook(bookId);
+    const chap = Math.min(book.chapters.length - 1, Math.max(0, saved.chap || 0));
+    setCur(chap);
+    pendingScrollRef.current = { chap, progress: saved.chapProgress || 0, anchor: 'probe', smooth: false };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  /* consume a pending scroll target (from goChap or the mount restore above) once
+     the chapter it points to has expanded to full content — runs after every
+     commit and no-ops immediately unless something set a target. */
+  useLayoutEffect(() => {
+    if (spread || !pendingScrollRef.current) return;
+    const target = pendingScrollRef.current;
+    const el = stageRef.current; const sec = secRefs.current[target.chap];
+    if (!el || !sec) return;
+    /* the setCur() that requested this target may not have committed its
+       render yet (this effect runs after every commit, including the one
+       that merely scheduled the update) — if the section is still a lazy
+       placeholder, its offsetHeight is the estimate, not the real size, so
+       wait for the commit where it's actually expanded before consuming. */
+    if (!sec.querySelector('.prose')) return;
+    pendingScrollRef.current = null;
+    /* 'top' anchor (chapter jumps) lands the section flush under the chrome;
+       'probe' anchor (restoring a saved position) inverts onScroll's own
+       `probe = scrollTop + clientHeight*0.35` so the reader lands exactly
+       where they left off, not at the chapter's start. */
+    const offset = target.anchor === 'probe' ? el.clientHeight * 0.35 : 12;
+    const top = Math.max(0, sec.offsetTop + (target.progress || 0) * sec.offsetHeight - offset);
+    if (target.smooth) { el.scrollTo({ top, behavior: 'smooth' }); }
+    else { el.scrollTop = top; lastY.current = top; }
+    /* sync cur/progress/overall to the new position immediately — scrollTop
+       reads back synchronously, and rAF isn't reliable here (suspended
+       entirely for backgrounded tabs, e.g. restoring position in a tab
+       that isn't focused yet). */
+    onScroll();
+  });
 
   /* reveal chrome near bottom */
   useEffect(() => {
@@ -310,18 +355,17 @@ export default function ReaderView({ book }) {
   }, [cur, spread]);
 
   /* plain "resuming" hint on a meaningful re-entry */
+  /* eslint-disable react-hooks/set-state-in-effect -- localStorage-derived, client-only */
   useEffect(() => {
     if (!mounted) return;
-    const y = loadBook(bookId).scrollY || 0;
-    let ci = 0;
-    if (y > 600 && stageRef.current) {
-      secRefs.current.forEach((s, i) => { if (s && s.offsetTop <= y + stageRef.current.clientHeight * 0.35) ci = i; });
-    }
-    if (y > 1200) setHintMsg('Resuming — ' + book.chapters[ci].title);
+    const saved = loadBook(bookId);
+    const chap = saved.chap || 0;
+    if (chap > 0 || (saved.chapProgress || 0) > 0.05) setHintMsg('Resuming — ' + book.chapters[chap].title);
     else setHintMsg(null);
     const h = setTimeout(() => setHintMsg(null), 4000);
     return () => clearTimeout(h);
   }, [mounted]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   /* progressively format the next few unformatted chapters ahead of where the
      reader actually is, instead of requiring the whole book to be formatted
@@ -343,6 +387,22 @@ export default function ReaderView({ book }) {
       if (results.some((r) => r && r.ok)) router.refresh();
     });
   }, [mounted, cur, book.chapters, bookId, router]);
+
+  /* cache each windowed chapter's real rendered height before it can collapse
+     back to a lazy placeholder, so re-expanding it later (or landing on it via
+     goChap) reuses an accurate size instead of the word-count estimate. */
+  useLayoutEffect(() => {
+    if (spread) return;
+    setChapHeights((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      for (let i = Math.max(0, cur - 1); i <= Math.min(book.chapters.length - 1, cur + 1); i++) {
+        const el = secRefs.current[i];
+        if (el && next[i] !== el.offsetHeight) { next[i] = el.offsetHeight; changed = true; }
+      }
+      return changed ? next : prev;
+    });
+  }, [cur, spread, book.chapters.length]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 900px)');
@@ -591,6 +651,19 @@ export default function ReaderView({ book }) {
   const ch = book.chapters[cur];
   const isMarked = marks.includes(cur);
 
+  /* rough pixel height for a not-yet-rendered chapter's placeholder, so
+     expanding/collapsing it as the reader scrolls doesn't jump the page —
+     refined by chapHeightRef once the chapter has actually been measured */
+  const estimateChapHeight = (c) => {
+    const words = wordsOfBlocks(c.blocks);
+    const px = MEASURES[measure];
+    const charsPerLine = Math.max(24, px / (fontSize * 0.52));
+    const wordsPerLine = charsPerLine / 5.7;
+    const lines = Math.max(4, Math.ceil(words / wordsPerLine));
+    const richBlocks = c.blocks.filter((b) => typeof b !== 'string').length;
+    return Math.round(lines * fontSize * leading + richBlocks * 150 + 110);
+  };
+
   const renderBlock = (b, i, ci) => {
     if (typeof b === 'string') {
       if (tts.on && tts.chap === ci && tts.para === i)
@@ -631,31 +704,44 @@ export default function ReaderView({ book }) {
         onMouseUp={handleSelect} onTouchEnd={handleSelect}>
         <div className="spread-frame" ref={frameRef}>
         <div className="article" ref={articleRef}>
-          {book.chapters.map((c, i) => (
-            <section className="chap" key={i} data-screen-label={c.n}
-              ref={(el) => { secRefs.current[i] = el; }}>
-              <div className="chap-eyebrow">{c.n}</div>
-              <h2 className="chap-title">{c.title}</h2>
-              <div className="chap-metarow">
-                <span className="chap-meta">{readTime(c)} min read</span>
-                {c.unformatted && <span className="chap-unformatted">Formatting…</span>}
-                {(() => {
-                  const s = c.rel != null ? c.rel : relScore(bookId, i), m = relMeta(s), h = relHeat(s);
-                  return (
-                    <span className={'rel rel-' + m.cls} title={`Story relevance ${s}/10 — ${m.label}`}>
-                      <span className="rel-k">Relevance</span>
-                      <span className="rel-track"><i style={{ width: s * 10 + '%', background: h }}></i></span>
-                      <span className="rel-n" style={{ color: h }}>{s}</span>
-                      <span className="rel-lab">{m.label}</span>
-                    </span>
-                  );
-                })()}
-              </div>
-              <div className={proseCls + (tts.on && tts.chap === i ? ' listening' : '')}>
-                {c.blocks.map((b, j) => renderBlock(b, j, i))}
-              </div>
-            </section>
-          ))}
+          {book.chapters.map((c, i) => {
+            /* only fully render chapters near where the reader actually is (plus
+               whichever chapter is being read aloud, if that's ahead of scroll) —
+               everything else is a lightweight placeholder until it's approached,
+               so a long book never pays the DOM cost of rendering every chapter. */
+            const full = spread || (i >= cur - 1 && i <= cur + 1) || (tts.on && i === tts.chap);
+            return (
+              <section className="chap" key={i} data-screen-label={c.n}
+                ref={(el) => { secRefs.current[i] = el; }}>
+                <div className="chap-eyebrow">{c.n}</div>
+                <h2 className="chap-title">{c.title}</h2>
+                <div className="chap-metarow">
+                  <span className="chap-meta">{readTime(c)} min read</span>
+                  {c.unformatted && <span className="chap-unformatted">Formatting…</span>}
+                  {(() => {
+                    const s = c.rel != null ? c.rel : relScore(bookId, i), m = relMeta(s), h = relHeat(s);
+                    return (
+                      <span className={'rel rel-' + m.cls} title={`Story relevance ${s}/10 — ${m.label}`}>
+                        <span className="rel-k">Relevance</span>
+                        <span className="rel-track"><i style={{ width: s * 10 + '%', background: h }}></i></span>
+                        <span className="rel-n" style={{ color: h }}>{s}</span>
+                        <span className="rel-lab">{m.label}</span>
+                      </span>
+                    );
+                  })()}
+                </div>
+                {full ? (
+                  <div className={proseCls + (tts.on && tts.chap === i ? ' listening' : '')}>
+                    {c.blocks.map((b, j) => renderBlock(b, j, i))}
+                  </div>
+                ) : (
+                  <div className="chap-lazy" style={{ minHeight: chapHeights[i] || estimateChapHeight(c) }}>
+                    <span className="chap-lazy-t">Loading…</span>
+                  </div>
+                )}
+              </section>
+            );
+          })}
           <div className="book-end">
             <div className="scenebreak">· · ·</div>
             <div className="end-note">End of available chapters.</div>
