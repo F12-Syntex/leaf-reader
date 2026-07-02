@@ -3,7 +3,7 @@
    (renderRich, buildCharIndex, useInView, etc.) live in lib/richtext.js. */
 'use client';
 import React, { useState as rtState } from 'react';
-import { renderRich, useInView } from '@/lib/richtext';
+import { renderRich, useInView, resolveChar } from '@/lib/richtext';
 
 /* ---------- stat bars ---------- */
 export function StatBars({ stats, on }) {
@@ -37,7 +37,7 @@ export function UiStatBlock({ b }) {
 
 /* ---------- in-flow character sheet ---------- */
 export function StatCard({ ckey, book, mentions }) {
-  const c = book.characters[ckey];
+  const c = resolveChar(book, ckey);
   const [ref, on] = useInView();
   return (
     <div className="statcard" ref={ref}>
@@ -59,7 +59,7 @@ export function StatCard({ ckey, book, mentions }) {
 /* ---------- letter (interactive fold-out) ---------- */
 export function LetterBlock({ b, book, ctx }) {
   const [open, setOpen] = rtState(false);
-  const from = book.characters[b.from];
+  const from = resolveChar(book, b.from);
   return (
     <div className={'letter' + (open ? ' open' : '')}>
       <button className="letter-head" onClick={() => setOpen(!open)}>
@@ -144,7 +144,7 @@ export function NotePopCard({ data }) {
 }
 
 export function DeltaCard({ b, book }) {
-  const c = book.characters[b.char];
+  const c = resolveChar(book, b.char);
   const [ref, on] = useInView();
   const up = b.to >= b.from;
   return (
@@ -167,7 +167,7 @@ export function DeltaCard({ b, book }) {
 
 /* ---------- popover cards ---------- */
 export function CharPopCard({ ckey, book, mentions, onMore }) {
-  const c = book.characters[ckey];
+  const c = resolveChar(book, ckey);
   return (
     <div className="cp">
       <div className="cp-head">
