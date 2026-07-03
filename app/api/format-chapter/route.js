@@ -16,11 +16,11 @@ async function readJson(p) {
    on the write and the slower/worse response silently clobbers the good one. */
 const inFlight = new Map();
 
-async function formatOne(bookId, stem) {
+async function formatOne(bookId, stem, force) {
   const dir = path.join(BOOKS_DIR, bookId);
   const formattedPath = path.join(dir, 'chapters', 'formatted', `${stem}.json`);
 
-  if (await readJson(formattedPath)) {
+  if (!force && await readJson(formattedPath)) {
     return { ok: true, alreadyDone: true };
   }
 
@@ -42,7 +42,7 @@ async function formatOne(bookId, stem) {
    OpenRouter call), so it can run inline in a request instead of needing a
    background job queue. */
 export async function POST(req) {
-  const { bookId, stem } = await req.json();
+  const { bookId, stem, force } = await req.json();
   if (!bookId || !stem) {
     return NextResponse.json({ error: 'bookId and stem are required' }, { status: 400 });
   }
@@ -50,7 +50,7 @@ export async function POST(req) {
   const key = `${bookId}:${stem}`;
   let promise = inFlight.get(key);
   if (!promise) {
-    promise = formatOne(bookId, stem).finally(() => inFlight.delete(key));
+    promise = formatOne(bookId, stem, !!force).finally(() => inFlight.delete(key));
     inFlight.set(key, promise);
   }
 

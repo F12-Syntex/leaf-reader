@@ -16,6 +16,7 @@ import ThemePanel from './ThemePanel';
 import SettingsPanel from './SettingsPanel';
 import SelectionToolbar from './SelectionToolbar';
 import EntityPopover from './EntityPopover';
+import AiPanel from './AiPanel';
 
 export default function ReaderView({ book }) {
   const router = useRouter();
@@ -56,6 +57,7 @@ export default function ReaderView({ book }) {
   const curRef = useRef(0);
   const [chrome, setChrome] = useState(true);
   const [hintMsg, setHintMsg] = useState(null);
+  const [reanalyseStatus, setReanalyseStatus] = useState(null);
 
   const stageRef = useRef(null);
   const secRefs = useRef([]);
@@ -71,6 +73,7 @@ export default function ReaderView({ book }) {
   const pendingScrollRef = useRef(null);
   const [chapHeights, setChapHeights] = useState({});
   const formatRequestedRef = useRef(new Set());
+  const heightEstCacheRef = useRef({ key: null, map: new Map() });
   const spread = pageMode === 'spread' && wide;
 
   /* declared up front (rather than interleaved with the effects below) so every
@@ -651,17 +654,46 @@ export default function ReaderView({ book }) {
   const ch = book.chapters[cur];
   const isMarked = marks.includes(cur);
 
+  const onReanalyse = async () => {
+    if (!ch.stem || reanalyseStatus === 'working') return;
+    setReanalyseStatus('working');
+    try {
+      const r = await fetch('/api/format-chapter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId, stem: ch.stem, force: true }),
+      }).then((res) => res.json()).catch(() => null);
+      if (r && r.ok) { setReanalyseStatus(null); router.refresh(); }
+      else setReanalyseStatus('error');
+    } catch (e) { setReanalyseStatus('error'); }
+  };
+
   /* rough pixel height for a not-yet-rendered chapter's placeholder, so
      expanding/collapsing it as the reader scrolls doesn't jump the page —
      refined by chapHeightRef once the chapter has actually been measured */
   const estimateChapHeight = (c) => {
+    /* only the 3 "full" chapters around `cur` get a real measured height
+       cached (see chapHeights below) — every other chapter in a 1000+
+       chapter book was recomputing this word-count/block-scan from scratch
+       on every single re-render (i.e. every scroll event), which dwarfed
+       everything else fixed so far. Cache by chapter + layout params
+       (height depends on measure/fontSize/leading, so a font-size change
+       must invalidate it) instead of recomputing every render. */
+    const key = measure + '|' + fontSize + '|' + leading;
+    if (heightEstCacheRef.current.key !== key) heightEstCacheRef.current = { key, map: new Map() };
+    const cache = heightEstCacheRef.current.map;
+    const cacheKey = c.stem || c.n;
+    const hit = cache.get(cacheKey);
+    if (hit != null) return hit;
     const words = wordsOfBlocks(c.blocks);
     const px = MEASURES[measure];
     const charsPerLine = Math.max(24, px / (fontSize * 0.52));
     const wordsPerLine = charsPerLine / 5.7;
     const lines = Math.max(4, Math.ceil(words / wordsPerLine));
     const richBlocks = c.blocks.filter((b) => typeof b !== 'string').length;
-    return Math.round(lines * fontSize * leading + richBlocks * 150 + 110);
+    const h = Math.round(lines * fontSize * leading + richBlocks * 150 + 110);
+    cache.set(cacheKey, h);
+    return h;
   };
 
   const renderBlock = (b, i, ci) => {
@@ -802,6 +834,8 @@ export default function ReaderView({ book }) {
           wide={wide} font={font} setFont={setFont} />
       )}
 
+      {pop === 'ai' && <AiPanel chapter={ch} status={reanalyseStatus} onReanalyse={onReanalyse} />}
+
       {/* dock */}
         <div className="dock">
           <button className={'ib' + (pop === 'chapters' ? ' on' : '')} onClick={() => setPop(pop === 'chapters' ? null : 'chapters')} title="Contents">{I.list}</button>
@@ -822,6 +856,7 @@ export default function ReaderView({ book }) {
             <span style={{ fontFamily: FONTS[font].stack, fontSize: 17, fontWeight: 500 }}>Aa</span>
           </button>
           <button className={'ib' + (pop === 'theme' ? ' on' : '')} onClick={() => setPop(pop === 'theme' ? null : 'theme')} title="Theme">{I.theme}</button>
+          <button className={'ib' + (pop === 'ai' ? ' on' : '')} onClick={() => setPop(pop === 'ai' ? null : 'ai')} title="AI formatting">{I.sparkle}</button>
         </div>
       </div>
     </div>

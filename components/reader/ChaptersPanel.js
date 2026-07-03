@@ -1,10 +1,42 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { relMeta, relHeat } from '@/lib/constants';
 import { readTime } from '@/lib/storage';
 import { ICONS as I } from '@/components/icons';
 
+/* windowed rendering — a 1000+ chapter book shouldn't mount 1000+ DOM rows
+   just to show a contents list. Two spacer divs (sized off a fixed row
+   height estimate) stand in for everything scrolled out of view, and only
+   rows actually near the viewport are ever rendered. */
+const ROW_H = 54;
+const OVERSCAN = 14;
+
 export default function ChaptersPanel({ book, cur, readSet, marks, tts, overall, onGoChap, onLibrary }) {
+  const listRef = useRef(null);
+  const total = book.chapters.length;
+  const [range, setRange] = useState(() => {
+    const start = Math.max(0, cur - OVERSCAN);
+    return { start, end: Math.min(total, start + OVERSCAN * 2 + 20) };
+  });
+  const updateRange = () => {
+    const el = listRef.current;
+    if (!el) return;
+    const start = Math.max(0, Math.floor(el.scrollTop / ROW_H) - OVERSCAN);
+    const visible = Math.ceil(el.clientHeight / ROW_H) + OVERSCAN * 2;
+    setRange({ start, end: Math.min(total, start + visible) });
+  };
+
+  /* open the panel already scrolled to wherever you're actually reading,
+     instead of always dropping you at chapter 1 */
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    el.scrollTop = Math.max(0, cur * ROW_H - el.clientHeight / 2 + ROW_H / 2);
+    updateRange();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="panel">
       <div className="ch-head">
@@ -22,8 +54,10 @@ export default function ChaptersPanel({ book, cur, readSet, marks, tts, overall,
           </div>
         </div>
       </div>
-      <div className="ch-list">
-        {book.chapters.map((c, i) => {
+      <div className="ch-list" ref={listRef} onScroll={updateRange}>
+        <div style={{ height: range.start * ROW_H }} />
+        {book.chapters.slice(range.start, range.end).map((c, idx) => {
+          const i = range.start + idx;
           const isRead = readSet.includes(i) && i !== cur;
           const m = c.unformatted ? null : relMeta(c.rel), h = c.unformatted ? null : relHeat(c.rel);
           return (
@@ -50,6 +84,7 @@ export default function ChaptersPanel({ book, cur, readSet, marks, tts, overall,
             </div>
           );
         })}
+        <div style={{ height: Math.max(0, total - range.end) * ROW_H }} />
       </div>
     </div>
   );
