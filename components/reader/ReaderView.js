@@ -373,7 +373,7 @@ export default function ReaderView({ book }) {
   useEffect(() => {
     if (!mounted) return;
     const upcoming = book.chapters
-      .slice(cur + 1, cur + 6)
+      .slice(cur, cur + 6)
       .filter((c) => c.unformatted && c.stem && !formatRequestedRef.current.has(c.stem));
     if (!upcoming.length) return;
     upcoming.forEach((c) => formatRequestedRef.current.add(c.stem));

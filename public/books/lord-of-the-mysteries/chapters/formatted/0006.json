@@ -1,0 +1,23 @@
+{
+  "n": "6",
+  "title": "Chapter 6 - Beyonder",
+  "rel": 7,
+  "blocks": [
+    {
+      "t": "statcard",
+      "char": "zhou_mingrui"
+    },
+    {
+      "t": "statcard",
+      "char": "audrey"
+    },
+    {
+      "t": "statcard",
+      "char": "alger"
+    },
+    {
+      "t": "statcard",
+      "char": "klein"
+    }
+  ]
+}
