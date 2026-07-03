@@ -10,8 +10,7 @@
       "initials": "KM",
       "gender": "m",
       "aliases": ["Klein", "Klein Moretti", "Zhou Mingrui"],
-      "desc": "Formerly Zhou Mingrui, an ordinary office worker who wakes up transmigrated into the body of Klein Moretti, a struggling history graduate in a gaslamp world of gods and mysticism. Pragmatic, quick to rationalize the bizarre, and driven above all by a desire to survive and return home.",
-      "stats": [["Caution", 8], ["Curiosity", 8], ["Composure", 6]]
+      "desc": "Formerly Zhou Mingrui, an ordinary office worker who wakes up transmigrated into the body of Klein Moretti, a struggling history graduate in a gaslamp world of gods and mysticism. Pragmatic, quick to rationalize the bizarre, and driven above all by a desire to survive and return home."
     },
     "melissa": {
       "name": "Melissa Moretti",
@@ -19,8 +18,7 @@
       "initials": "M",
       "gender": "f",
       "aliases": ["Melissa"],
-      "desc": "Klein's sharp, practical younger sister, a student at Tingen Technical School's Steam and Machinery department. Terse and undemonstrative, but quietly devoted to her family.",
-      "stats": [["Practicality", 8], ["Warmth", 5], ["Patience", 4]]
+      "desc": "Klein's sharp, practical younger sister, a student at Tingen Technical School's Steam and Machinery department. Terse and undemonstrative, but quietly devoted to her family."
     },
     "benson": {
       "name": "Benson Moretti",
@@ -28,8 +26,7 @@
       "initials": "B",
       "gender": "m",
       "aliases": ["Benson"],
-      "desc": "The eldest of the Moretti siblings, working long hours as a clerk at an import-export company to support his younger brother and sister after their parents' deaths.",
-      "stats": [["Diligence", 8], ["Selflessness", 8], ["Pride", 5]]
+      "desc": "The eldest of the Moretti siblings, working long hours as a clerk at an import-export company to support his younger brother and sister after their parents' deaths."
     }
   }
 }

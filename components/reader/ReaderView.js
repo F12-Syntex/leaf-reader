@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useLayoutEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { FONTS, MEASURES, APP_DEFAULTS, relScore, relMeta, relHeat } from '@/lib/constants';
+import { FONTS, MEASURES, APP_DEFAULTS, relMeta, relHeat } from '@/lib/constants';
 import { loadGlobal, saveGlobal, loadBook, saveBook, readTime, wordsOfBlocks } from '@/lib/storage';
 import { buildCharIndex, computeMentions, assignHues, computeDialogue, cleanText, renderProse } from '@/lib/richtext';
 import {
@@ -717,9 +717,10 @@ export default function ReaderView({ book }) {
                 <h2 className="chap-title">{c.title}</h2>
                 <div className="chap-metarow">
                   <span className="chap-meta">{readTime(c)} min read</span>
-                  {c.unformatted && <span className="chap-unformatted">Formatting…</span>}
-                  {(() => {
-                    const s = c.rel != null ? c.rel : relScore(bookId, i), m = relMeta(s), h = relHeat(s);
+                  {c.unformatted ? (
+                    <span className="chap-unformatted">Not yet processed</span>
+                  ) : (() => {
+                    const s = c.rel, m = relMeta(s), h = relHeat(s);
                     return (
                       <span className={'rel rel-' + m.cls} title={`Story relevance ${s}/10 — ${m.label}`}>
                         <span className="rel-k">Relevance</span>

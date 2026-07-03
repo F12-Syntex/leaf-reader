@@ -1,6 +1,6 @@
 'use client';
 
-import { relScore, relMeta, relHeat } from '@/lib/constants';
+import { relMeta, relHeat } from '@/lib/constants';
 import { readTime } from '@/lib/storage';
 import { ICONS as I } from '@/components/icons';
 
@@ -25,7 +25,7 @@ export default function ChaptersPanel({ book, cur, readSet, marks, tts, overall,
       <div className="ch-list">
         {book.chapters.map((c, i) => {
           const isRead = readSet.includes(i) && i !== cur;
-          const s = c.rel != null ? c.rel : relScore(book.id, i), m = relMeta(s), h = relHeat(s);
+          const m = c.unformatted ? null : relMeta(c.rel), h = c.unformatted ? null : relHeat(c.rel);
           return (
             <div key={i} className={'crow' + (i === cur ? ' cur' : '') + (isRead ? ' read' : '')} onClick={() => onGoChap(i)}>
               <div className="num">{String(i + 1).padStart(2, '0')}</div>
@@ -36,10 +36,14 @@ export default function ChaptersPanel({ book, cur, readSet, marks, tts, overall,
                   {marks.includes(i) && <span className="bm">{I.bookmarkOn}</span>}
                 </div>
               </div>
-              <span className={'rel rel-sm rel-' + m.cls} title={`Story relevance ${s}/10 — ${m.label}`}>
-                <span className="rel-track"><i style={{ width: s * 10 + '%', background: isRead ? 'var(--soft)' : h }}></i></span>
-                <span className="rel-n" style={{ color: isRead ? 'var(--soft)' : h }}>{s}</span>
-              </span>
+              {c.unformatted ? (
+                <span className="chap-unformatted chap-unformatted-sm">Not processed</span>
+              ) : (
+                <span className={'rel rel-sm rel-' + m.cls} title={`Story relevance ${c.rel}/10 — ${m.label}`}>
+                  <span className="rel-track"><i style={{ width: c.rel * 10 + '%', background: isRead ? 'var(--soft)' : h }}></i></span>
+                  <span className="rel-n" style={{ color: isRead ? 'var(--soft)' : h }}>{c.rel}</span>
+                </span>
+              )}
               {tts.on && tts.chap === i ? <span className="now">Listening</span>
                 : i === cur ? <span className="now">Reading</span>
                 : isRead ? <span className="ck">{I.tick}</span> : null}
