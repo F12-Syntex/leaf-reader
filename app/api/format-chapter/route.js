@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { formatChapterViaOpenRouter } from '@/lib/openrouter';
-import { normalizeBlocks } from '@/lib/normalizeBlocks';
+import { normalizeBlocks, auditBlocks, wordsInBlocks } from '@/lib/normalizeBlocks';
 
 const BOOKS_DIR = path.join(process.cwd(), 'public', 'books');
 
@@ -30,8 +30,31 @@ async function formatOne(bookId, stem, force) {
     return { error: 'chapter or book not found', status: 404 };
   }
 
-  const formatted = await formatChapterViaOpenRouter(original, meta.characters);
-  formatted.blocks = normalizeBlocks(formatted.blocks);
+  /* correction loop: normalize repairs most model drift in place; whatever
+     it can't fix (or a truncated/paraphrased chapter that lost too much
+     prose) triggers ONE retry with an explicit note about what went wrong.
+     If the retry is still unusable, keep the chapter unformatted rather than
+     writing a broken file — the reader's Reanalyse button can try again. */
+  const originalWords = wordsInBlocks(original.blocks);
+  const attempt = async (correction) => {
+    const formatted = await formatChapterViaOpenRouter(original, meta.characters, correction);
+    formatted.blocks = normalizeBlocks(formatted.blocks);
+    const problems = auditBlocks(formatted.blocks);
+    const words = wordsInBlocks(formatted.blocks);
+    if (originalWords > 100 && words < originalWords * 0.6) {
+      problems.push(`output lost too much prose (${words} words vs ${originalWords} in the source) — it was truncated or summarized; every sentence of the source must be present`);
+    }
+    return { formatted, problems };
+  };
+
+  let { formatted, problems } = await attempt();
+  if (problems.length) {
+    ({ formatted, problems } = await attempt('- ' + problems.slice(0, 8).join('\n- ')));
+  }
+  if (problems.length) {
+    return { error: 'formatting failed validation: ' + problems.slice(0, 3).join('; '), status: 502 };
+  }
+
   await mkdir(path.dirname(formattedPath), { recursive: true });
   await writeFile(formattedPath, JSON.stringify(formatted, null, 2), 'utf8');
   return { ok: true };

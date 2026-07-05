@@ -201,13 +201,102 @@
   .chap-next svg { width: 16px; height: 16px; opacity: .7; flex: none;
     transition: transform .22s cubic-bezier(.2,.7,.2,1), opacity .2s ease; }
   .chap-next button:hover svg { transform: translateX(3px); opacity: 1; }
-  /* two-page mode: floats over the bottom of the spread on its last page,
-     clear of the dock (fixed — the stage scrolls, so absolute would drift) */
-  .chap-next-spread { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%);
-    z-index: 26; margin: 0; }
-  .chap-next-spread button { backdrop-filter: blur(14px) saturate(1.3);
-    -webkit-backdrop-filter: blur(14px) saturate(1.3);
-    border-color: var(--dock-bd); background: color-mix(in srgb, var(--dock-bg) 84%, transparent); }
+  /* next-chapter dock — first child of .dock-col, so it stacks above the eta
+     pill, any open panel, and the main dock; revealed at the end of a chapter */
+  .next-dock { display: flex; justify-content: center;
+    animation: nextdockin .32s cubic-bezier(.2,.7,.2,1) 1; }
+  @keyframes nextdockin { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .next-dock button { display: inline-flex; align-items: center; gap: 12px; cursor: pointer;
+    padding: 11px 20px 11px 22px; border-radius: 999px;
+    border: 1px solid var(--dock-bd); color: var(--ink); box-shadow: var(--shadow);
+    background: color-mix(in srgb, var(--dock-bg) 86%, transparent);
+    backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    transition: border-color .2s ease, background .2s ease, transform .18s ease; }
+  .next-dock button:hover { transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ink) 24%, transparent);
+    background: color-mix(in srgb, var(--dock-bg) 96%, var(--ink) 4%); }
+  .next-dock button:active { transform: scale(.97); }
+  .next-dock button:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset: 3px; }
+  .next-dock svg { width: 16px; height: 16px; opacity: .7; flex: none;
+    transition: transform .22s cubic-bezier(.2,.7,.2,1), opacity .2s ease; }
+  .next-dock button:hover svg { transform: translateX(3px); opacity: 1; }
+
+  /* previous-chapter variant: quieter, sits above the chapter heading */
+  .chap-prev { margin: 0 0 2.2em; }
+  .chap-prev button { padding: 8px 18px 8px 14px; box-shadow: none;
+    background: transparent; border-color: color-mix(in srgb, var(--hair) 70%, transparent); }
+  .chap-prev .chap-next-t { font-size: 13.5px; max-width: 260px; }
+  .chap-prev button:hover svg { transform: translateX(-3px); opacity: 1; }
+
+  /* ---------- newer rich-text blocks ---------- */
+  .sfx { margin: 1.9em 0; text-align: center; text-indent: 0; font-family: var(--serif);
+    font-weight: 800; font-size: calc(var(--fs) * 1.7); letter-spacing: .06em; color: var(--ink); }
+  @media (prefers-reduced-motion: no-preference) {
+    .sfx.sfx-live { animation: sfxpop .5s cubic-bezier(.2,1.4,.4,1) 1; }
+  }
+  @keyframes sfxpop { 0% { transform: scale(.82); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+  .dream { position: relative; margin: 2.6em 0; padding: 26px 28px; border-radius: 20px; text-indent: 0;
+    border: 1px solid color-mix(in srgb, var(--fx-mind) 30%, var(--line));
+    background: linear-gradient(160deg, color-mix(in srgb, var(--fx-mind) 12%, var(--card)),
+      color-mix(in srgb, var(--fx-mind) 4%, var(--bg))); overflow: hidden; }
+  .dream::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 90% at 80% 0%, color-mix(in srgb, var(--fx-mind) 16%, transparent), transparent 55%); }
+  .dream-label { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 10.5px; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--fx-mind); margin-bottom: 10px; }
+  .dream-x { font-family: var(--serif); font-style: italic; line-height: 1.65;
+    color: color-mix(in srgb, var(--ink) 88%, var(--fx-mind)); }
+
+  .flashback { margin: 2.6em 0; padding: 4px 0 4px 24px; text-indent: 0;
+    border-left: 3px double color-mix(in srgb, var(--soft) 55%, transparent); }
+  .flashback-label { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 10.5px; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--soft); margin-bottom: 8px; }
+  .flashback-x { font-family: var(--serif); font-style: italic; color: color-mix(in srgb, var(--ink) 78%, var(--soft));
+    line-height: 1.65; }
+
+  .ritual { margin: 2.8em 0; text-align: center; text-indent: 0; padding: 20px 16px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .ritual-line { font-family: var(--serif); font-variant: small-caps; letter-spacing: .12em;
+    font-size: calc(var(--fs) * 1.05); line-height: 2; color: var(--fx-mind); opacity: 0; }
+  .ritual-live .ritual-line { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ritual-live .ritual-line { animation: ritualin .7s ease-out both; animation-delay: calc(var(--i) * .18s); }
+  }
+  @keyframes ritualin { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+  .poem { margin: 2.4em 0 2.4em 1.6em; text-indent: 0; }
+  .poem-line { font-family: var(--serif); font-style: italic; line-height: 1.9;
+    color: color-mix(in srgb, var(--ink) 86%, var(--soft)); }
+  .poem-line:nth-child(even) { padding-left: 1.4em; }
+
+  .sysmsg { margin: 2.4em auto; max-width: 46ch; padding: 18px 22px; border-radius: 14px; text-indent: 0;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+    background: color-mix(in srgb, var(--accent) 7%, var(--card));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 6%, transparent),
+      inset 0 0 24px color-mix(in srgb, var(--accent) 6%, transparent); }
+  .sysmsg-line { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: calc(var(--fs) * .78);
+    letter-spacing: .06em; line-height: 1.8; color: color-mix(in srgb, var(--accent) 70%, var(--ink)); text-align: center; }
+  @media (prefers-reduced-motion: no-preference) {
+    .sysmsg.sysmsg-live { animation: sysin .6s ease-out 1; }
+  }
+  @keyframes sysin { from { opacity: 0; transform: translateY(8px); box-shadow: 0 0 0 12px transparent; } to { opacity: 1; transform: none; } }
+
+  .signboard { margin: 2.4em 0; display: flex; justify-content: center; text-indent: 0; }
+  .signboard span { display: inline-block; padding: 12px 30px; border: 1.5px solid color-mix(in srgb, var(--ink) 45%, transparent);
+    border-radius: 4px; box-shadow: 0 2px 0 color-mix(in srgb, var(--ink) 20%, transparent);
+    font-family: var(--serif); font-variant: small-caps; letter-spacing: .16em; text-align: center;
+    font-size: calc(var(--fs) * .95); color: var(--ink); background: var(--field); }
+
+  .news { margin: 2.6em auto; max-width: 52ch; padding: 22px 26px; text-indent: 0;
+    border: 1px solid var(--line); border-radius: 4px; background: var(--field);
+    box-shadow: 2px 3px 0 color-mix(in srgb, var(--ink) 7%, transparent); transform: rotate(-.4deg); }
+  .news-source { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: .22em; text-transform: uppercase; color: var(--soft); text-align: center;
+    border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 12px; }
+  .news-title { font-family: var(--serif); font-weight: 700; font-size: calc(var(--fs) * 1.18);
+    line-height: 1.3; margin-bottom: 10px; color: var(--ink); }
+  .news-x { font-family: var(--serif); font-size: calc(var(--fs) * .88); line-height: 1.6;
+    color: color-mix(in srgb, var(--ink) 84%, var(--soft)); }
 
   /* ---------- Top progress ---------- */
   .progline { position: absolute; top: 0; left: 0; height: 2px; z-index: 40;
@@ -453,6 +542,30 @@
   .fx-glow { color: var(--accent); text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent); }
   .fx-fade { background: linear-gradient(90deg, var(--ink) 20%, color-mix(in srgb, var(--ink) 16%, transparent));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+
+  /* --- expanded expressive vocabulary --- */
+  .app[data-theme="paper"] { --fx-blood: #8c1d18; --fx-divine: #8a6d1f; --fx-shadow: #3b3549; --fx-mind: #5b4a80; }
+  .app[data-theme="sepia"] { --fx-blood: #83201a; --fx-divine: #7f651c; --fx-shadow: #40394d; --fx-mind: #59487b; }
+  .app[data-theme="dark"], .app[data-theme="oled"] { --fx-blood: #d4544a; --fx-divine: #d9b968; --fx-shadow: #9a90b8; --fx-mind: #a794d6; }
+  .fx-echo { font-style: italic; opacity: .85;
+    text-shadow: 3px 0 0 color-mix(in srgb, var(--ink) 18%, transparent), 6px 0 0 color-mix(in srgb, var(--ink) 8%, transparent); }
+  .fx-chant { font-variant: small-caps; letter-spacing: .14em; color: var(--fx-mind);
+    font-weight: 500; }
+  .fx-blood { color: var(--fx-blood); font-weight: 600; }
+  .fx-divine { color: var(--fx-divine); font-weight: 500;
+    text-shadow: 0 0 14px color-mix(in srgb, var(--fx-divine) 50%, transparent); }
+  .fx-shadow { color: var(--fx-shadow);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--fx-shadow) 55%, transparent); }
+  .fx-thunder { font-weight: 800; letter-spacing: .05em; }
+  .fx-ancient { font-variant: small-caps; letter-spacing: .1em; opacity: .82;
+    border-bottom: 1px dotted color-mix(in srgb, var(--ink) 35%, transparent); }
+  .fx-tiny { font-size: .8em; opacity: .7; font-style: italic; }
+  .fx-mind { color: var(--fx-mind); font-style: italic; letter-spacing: .03em; }
+  @media (prefers-reduced-motion: no-preference) {
+    .fx-thunder.fx-live { animation: tremor .14s linear 4; }
+    .fx-divine.fx-live, .fx-shadow.fx-live { animation: fxbloom 1.4s ease-out 1; }
+  }
+  @keyframes fxbloom { 0% { filter: brightness(1); } 35% { filter: brightness(1.35); } 100% { filter: brightness(1); } }
 
   .chip-note { cursor: pointer; border-radius: 2px; transition: background .15s; }
   .chip-note:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }

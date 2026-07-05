@@ -116,6 +116,79 @@ export function SceneBlock({ b, ctx }) {
   );
 }
 
+/* ---------- newer block types (formatting upgrade) ---------- */
+
+/* big standalone onomatopoeia ("Bam!", "Kacha!") */
+export function SfxBlock({ b }) {
+  const [ref, on] = useInView();
+  return <div className={'sfx' + (on ? ' sfx-live' : '')} ref={ref}>{b.x}</div>;
+}
+
+/* dream / vision / hallucination passage */
+export function DreamBlock({ b, ctx }) {
+  return (
+    <div className="dream">
+      <div className="dream-label">{b.label || 'Vision'}</div>
+      <div className="dream-x">{renderRich(b.x, { ...ctx, detect: false })}</div>
+    </div>
+  );
+}
+
+/* explicit memory / recollection passage */
+export function FlashbackBlock({ b, ctx }) {
+  return (
+    <div className="flashback">
+      <div className="flashback-label">{b.label || 'Memory'}</div>
+      <div className="flashback-x">{renderRich(b.x, { ...ctx, detect: false })}</div>
+    </div>
+  );
+}
+
+/* spoken ritual / incantation / prayer */
+export function RitualBlock({ b, ctx }) {
+  const [ref, on] = useInView();
+  return (
+    <div className={'ritual' + (on ? ' ritual-live' : '')} ref={ref}>
+      {b.lines.map((l, i) => <div className="ritual-line" key={i} style={{ '--i': i }}>{renderRich(l, { ...ctx, detect: false })}</div>)}
+    </div>
+  );
+}
+
+/* verse / song / rhyme */
+export function PoemBlock({ b, ctx }) {
+  return (
+    <div className="poem">
+      {b.lines.map((l, i) => <div className="poem-line" key={i}>{renderRich(l, { ...ctx, detect: false })}</div>)}
+    </div>
+  );
+}
+
+/* mystical/system notification panel */
+export function SysBlock({ b }) {
+  const [ref, on] = useInView();
+  return (
+    <div className={'sysmsg' + (on ? ' sysmsg-live' : '')} ref={ref}>
+      {b.lines.map((l, i) => <div className="sysmsg-line" key={i}>{l}</div>)}
+    </div>
+  );
+}
+
+/* signboard / plaque / gravestone text */
+export function SignBlock({ b }) {
+  return <div className="signboard"><span>{b.x}</span></div>;
+}
+
+/* newspaper clipping */
+export function NewsBlock({ b, ctx }) {
+  return (
+    <div className="news">
+      {b.source && <div className="news-source">{b.source}</div>}
+      {b.title && <div className="news-title">{b.title}</div>}
+      <div className="news-x">{renderRich(b.x, { ...ctx, detect: false })}</div>
+    </div>
+  );
+}
+
 export function JourneyCard({ b }) {
   const [ref, on] = useInView();
   return (
