@@ -182,6 +182,33 @@
   .pg-count span { opacity: .4; font-weight: 400; }
   .set-hint { font-size: 11px; color: var(--soft); margin-top: 8px; line-height: 1.4; }
 
+  /* ---------- Next-chapter button (end of chapter, both layouts) ---------- */
+  .chap-next { display: flex; justify-content: center; margin: 2.6em 0 1.2em; }
+  .chap-next button { display: inline-flex; align-items: center; gap: 12px; cursor: pointer;
+    padding: 11px 20px 11px 22px; border-radius: 999px;
+    border: 1px solid var(--hair); background: color-mix(in srgb, var(--bg) 70%, transparent);
+    color: var(--ink); box-shadow: var(--shadow);
+    transition: border-color .2s ease, background .2s ease, transform .18s ease; }
+  .chap-next button:hover { transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--ink) 24%, transparent);
+    background: color-mix(in srgb, var(--bg) 92%, var(--ink) 8%); }
+  .chap-next button:active { transform: scale(.97); }
+  .chap-next button:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset: 3px; }
+  .chap-next-k { font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 10px;
+    font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); }
+  .chap-next-t { font-family: var(--serif); font-size: 15px; font-style: italic;
+    max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chap-next svg { width: 16px; height: 16px; opacity: .7; flex: none;
+    transition: transform .22s cubic-bezier(.2,.7,.2,1), opacity .2s ease; }
+  .chap-next button:hover svg { transform: translateX(3px); opacity: 1; }
+  /* two-page mode: floats over the bottom of the spread on its last page,
+     clear of the dock (fixed — the stage scrolls, so absolute would drift) */
+  .chap-next-spread { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%);
+    z-index: 26; margin: 0; }
+  .chap-next-spread button { backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    border-color: var(--dock-bd); background: color-mix(in srgb, var(--dock-bg) 84%, transparent); }
+
   /* ---------- Top progress ---------- */
   .progline { position: absolute; top: 0; left: 0; height: 2px; z-index: 40;
     background: var(--accent); transition: width .12s linear, opacity .3s; opacity: .85; }

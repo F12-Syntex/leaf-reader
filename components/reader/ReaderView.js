@@ -66,10 +66,12 @@ export default function ReaderView({ book }) {
   const frameRef = useRef(null);
   const articleRef = useRef(null);
   const spRef = useRef({ pageStep: 1, frameW: 0, pageH: 0, colW: 0, G: 0 });
-  const chapPagesRef = useRef([0]);
   const spreadPagesRef = useRef(1);
   const spreadPageRef = useRef(0);
-  const pendingChap = useRef(null);
+  /* where the next spread layout should land: {page: n | 'last'} after a
+     chapter change, or {frac} to preserve proportional position on
+     mode/typography changes */
+  const pendingSpreadRef = useRef(null);
   const pendingScrollRef = useRef(null);
   const [chapHeights, setChapHeights] = useState({});
   const formatRequestedRef = useRef(new Set());
@@ -116,8 +118,10 @@ export default function ReaderView({ book }) {
     if (i < 0 || i >= book.chapters.length) return;
     setPop(null); setIpop(null); setChrome(true);
     if (spread) {
-      const pg = Math.min(spreadPagesRef.current - 1, Math.max(0, chapPagesRef.current[i] || 0));
-      setPage(pg); applyPage(pg, spRef.current); updateFromPage(pg);
+      /* spread renders one chapter at a time — switch chapters and let the
+         layout effect below paginate the new one from its first page */
+      pendingSpreadRef.current = { chap: i, page: 0 };
+      setCur(i);
       return;
     }
     /* chapter i may currently be a lazy placeholder (outside the render window) —
@@ -149,20 +153,26 @@ export default function ReaderView({ book }) {
     fr.scrollLeft = page * g.pageStep;
   };
   const updateFromPage = (page) => {
-    const cp = chapPagesRef.current; let ci = 0;
-    for (let i = 0; i < cp.length; i++) if (cp[i] <= page) ci = i;
-    setCur(ci);
-    const start = cp[ci] || 0;
-    const next = (ci + 1 < cp.length) ? cp[ci + 1] : spreadPagesRef.current;
-    const span = Math.max(1, next - start);
-    setProgress(Math.min(1, Math.max(0, (page - start + 1) / span)));
-    setOverall(spreadPagesRef.current > 1 ? page / (spreadPagesRef.current - 1) : 0);
+    /* spread paginates only the current chapter, so page → within-chapter
+       progress directly; overall position comes from the chapter index */
+    const ci = curRef.current;
+    const pages = spreadPagesRef.current;
+    const pr = pages > 0 ? Math.min(1, Math.max(0, (page + 1) / pages)) : 0;
+    setProgress(pr);
+    const total = book.chapters.length;
+    setOverall(total > 0 ? Math.min(1, (ci + pr) / total) : 0);
     setReadSet((rs) => {
       const s = new Set(rs); const before = s.size;
       for (let k = 0; k < ci; k++) s.add(k);
-      if (page >= next - 1) s.add(ci);
+      if (page >= pages - 1) s.add(ci);
       return s.size === before ? rs : Array.from(s).sort((a, b) => a - b);
     });
+    clearTimeout(saveT.current);
+    saveT.current = setTimeout(() => {
+      const st = loadBook(bookId);
+      saveBook(bookId, { ...st, chap: ci, chapProgress: pr,
+        overall: total > 0 ? Math.min(1, (ci + pr) / total) : 0, at: Date.now() });
+    }, 300);
   };
   const layoutSpread = () => {
     const a = articleRef.current, fr = frameRef.current, el = stageRef.current;
@@ -183,26 +193,41 @@ export default function ReaderView({ book }) {
     const contentW = Math.max(a.scrollWidth, lastRight);
     const pages = contentW <= g.frameW + 4 ? 1 : Math.max(1, Math.ceil((contentW - g.frameW) / g.pageStep) + 1);
     spreadPagesRef.current = pages; setSpreadPages(pages);
-    const cp = [];
-    secRefs.current.forEach((s, i) => {
-      if (!s) { cp[i] = i > 0 ? cp[i - 1] : 0; return; }
-      const r = s.getBoundingClientRect();
-      cp[i] = Math.min(pages - 1, Math.max(0, Math.floor((r.left - aRect.left + 2) / g.pageStep)));
-    });
-    for (let i = 1; i < cp.length; i++) if (cp[i] < cp[i - 1]) cp[i] = cp[i - 1];
-    chapPagesRef.current = cp;
     let page = spreadPageRef.current;
-    if (pendingChap.current != null) { page = cp[pendingChap.current] || 0; pendingChap.current = null; }
+    const pending = pendingSpreadRef.current;
+    /* only consume a target aimed at the chapter actually laid out — a resize
+       or style pass can run while the setCur that queued the target hasn't
+       committed yet, and must not burn it against the outgoing chapter */
+    if (pending != null && (pending.chap == null || pending.chap === curRef.current)) {
+      if (pending.frac != null) page = Math.round(pending.frac * (pages - 1));
+      else page = pending.page === 'last' ? pages - 1 : (pending.page || 0);
+      pendingSpreadRef.current = null;
+    }
     page = Math.min(pages - 1, Math.max(0, page));
     applyPage(page, g); setPage(page); updateFromPage(page);
   };
   const goPage = (d) => {
     const max = spreadPagesRef.current - 1;
-    const n = Math.min(max, Math.max(0, spreadPageRef.current + d));
+    const n = spreadPageRef.current + d;
+    if (n > max || n < 0) {
+      /* past either edge of the chapter — flow into the neighbouring one,
+         landing on its first page going forward, last page going back */
+      const ci = curRef.current + (n > max ? 1 : -1);
+      if (ci < 0 || ci >= book.chapters.length) return;
+      setIpop(null); setSeltool(null);
+      pendingSpreadRef.current = { chap: ci, page: n > max ? 0 : 'last' };
+      setCur(ci);
+      return;
+    }
     if (n === spreadPageRef.current) return;
     setIpop(null); setSeltool(null);
     applyPage(n, spRef.current); setPage(n); updateFromPage(n);
   };
+
+  /* keep curRef in lockstep with cur before any layout effect below reads it —
+     wheel/resize handlers capture goPage/layoutSpread closures that would
+     otherwise see a stale chapter index */
+  useLayoutEffect(() => { curRef.current = cur; }, [cur]);
 
   /* ---- mount: load global prefs + this book's saved progress from localStorage.
      ReaderView is remounted per book (see app/book/[id]/page.js's key={book.id}),
@@ -296,10 +321,10 @@ export default function ReaderView({ book }) {
   useLayoutEffect(() => {
     if (!mounted) return;
     secRefs.current.length = book.chapters.length;
-    if (spread) return;
     const saved = loadBook(bookId);
     const chap = Math.min(book.chapters.length - 1, Math.max(0, saved.chap || 0));
     setCur(chap);
+    if (spread) { pendingSpreadRef.current = { chap, frac: saved.chapProgress || 0 }; return; }
     pendingScrollRef.current = { chap, progress: saved.chapProgress || 0, anchor: 'probe', smooth: false };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
@@ -418,7 +443,12 @@ export default function ReaderView({ book }) {
       window.removeEventListener('resize', f);
     };
   }, []);
-  useEffect(() => { if (spread) pendingChap.current = cur; }, [spread]);
+  /* entering spread: keep the reader's proportional place in the chapter —
+     unless something (the mount restore) already queued a landing target */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (spread && !pendingSpreadRef.current) pendingSpreadRef.current = { chap: cur, frac: progress };
+  }, [spread]);
   useLayoutEffect(() => {
     if (!mounted) return;
     layoutSpread();
@@ -427,6 +457,17 @@ export default function ReaderView({ book }) {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, spread, measure, fontSize, leading, font, theme]);
+  /* spread renders exactly one chapter, so a chapter change swaps the article's
+     content and needs a fresh pagination pass (the effect above deliberately
+     doesn't depend on cur — in scroll mode its reset branch would hijack
+     scrolling on every chapter boundary) */
+  useLayoutEffect(() => {
+    if (!mounted || !spread) return;
+    layoutSpread();
+    const t = setTimeout(layoutSpread, 80);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cur]);
   useEffect(() => {
     if (!spread) return;
     let t = 0;
@@ -588,6 +629,16 @@ export default function ReaderView({ book }) {
   useEffect(() => {
     if (!tts.on || tts.para < 0) return;
     const stage = stageRef.current; if (!stage) return;
+    /* spread shows one chapter at a time — when read-aloud rolls into the
+       next chapter, follow it there first */
+    if (spread && tts.chap !== cur) {
+      pendingSpreadRef.current = { chap: tts.chap, page: 0 };
+      /* eslint-disable-next-line react-hooks/set-state-in-effect -- deliberate:
+         read-aloud position is external (speech synthesis callbacks), and the
+         visible chapter must follow it */
+      setCur(tts.chap);
+      return;
+    }
     const para = stage.querySelector('.tts-para'); if (!para) return;
     const active = para.querySelector('.tw.on') || para;
 
@@ -607,7 +658,7 @@ export default function ReaderView({ book }) {
       const target = stage.scrollTop + top - stage.clientHeight * 0.32;
       stage.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
     }
-  }, [tts.on, tts.chap, tts.para, tts.word, spread]);
+  }, [tts.on, tts.chap, tts.para, tts.word, spread, cur]);
 
   const openIpop = (e, payload) => {
     const r = e.target.getBoundingClientRect();
@@ -737,10 +788,14 @@ export default function ReaderView({ book }) {
         <div className="spread-frame" ref={frameRef}>
         <div className="article" ref={articleRef}>
           {book.chapters.map((c, i) => {
-            /* only fully render chapters near where the reader actually is (plus
-               whichever chapter is being read aloud, if that's ahead of scroll) —
-               everything else is a lightweight placeholder until it's approached,
-               so a long book never pays the DOM cost of rendering every chapter. */
+            /* spread paginates a single chapter at a time — mounting anything
+               else would lay the whole book out in CSS columns. Scroll mode
+               only fully renders chapters near where the reader actually is
+               (plus whichever chapter is being read aloud, if that's ahead of
+               scroll) — everything else is a lightweight placeholder until
+               it's approached, so a long book never pays the DOM cost of
+               rendering every chapter. */
+            if (spread && i !== cur) return null;
             const full = spread || (i >= cur - 1 && i <= cur + 1) || (tts.on && i === tts.chap);
             return (
               <section className="chap" key={i} data-screen-label={c.n}
@@ -764,9 +819,20 @@ export default function ReaderView({ book }) {
                   })()}
                 </div>
                 {full ? (
-                  <div className={proseCls + (tts.on && tts.chap === i ? ' listening' : '')}>
-                    {c.blocks.map((b, j) => renderBlock(b, j, i))}
-                  </div>
+                  <>
+                    <div className={proseCls + (tts.on && tts.chap === i ? ' listening' : '')}>
+                      {c.blocks.map((b, j) => renderBlock(b, j, i))}
+                    </div>
+                    {!spread && i + 1 < book.chapters.length && (
+                      <div className="chap-next">
+                        <button onClick={() => goChap(i + 1)}>
+                          <span className="chap-next-k">Next chapter</span>
+                          <span className="chap-next-t">{book.chapters[i + 1].title}</span>
+                          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                        </button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="chap-lazy" style={{ minHeight: chapHeights[i] || estimateChapHeight(c) }}>
                     <span className="chap-lazy-t">Loading…</span>
@@ -775,21 +841,32 @@ export default function ReaderView({ book }) {
               </section>
             );
           })}
-          <div className="book-end">
-            <div className="scenebreak">· · ·</div>
-            <div className="end-note">End of available chapters.</div>
-          </div>
+          {(!spread || cur === book.chapters.length - 1) && (
+            <div className="book-end">
+              <div className="scenebreak">· · ·</div>
+              <div className="end-note">End of available chapters.</div>
+            </div>
+          )}
         </div>
         </div>
         {spread && (
           <>
-            <button className="pg pg-prev" onClick={() => goPage(-1)} disabled={spreadPage <= 0} aria-label="Previous page">
+            <button className="pg pg-prev" onClick={() => goPage(-1)} disabled={spreadPage <= 0 && cur <= 0} aria-label="Previous page">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"></path></svg>
             </button>
-            <button className="pg pg-next" onClick={() => goPage(1)} disabled={spreadPage >= spreadPages - 1} aria-label="Next page">
+            <button className="pg pg-next" onClick={() => goPage(1)} disabled={spreadPage >= spreadPages - 1 && cur >= book.chapters.length - 1} aria-label="Next page">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"></path></svg>
             </button>
             <div className="pg-count">{spreadPage + 1}<span>/</span>{spreadPages}</div>
+            {spreadPage >= spreadPages - 1 && cur + 1 < book.chapters.length && (
+              <div className="chap-next chap-next-spread">
+                <button onClick={() => goChap(cur + 1)}>
+                  <span className="chap-next-k">Next chapter</span>
+                  <span className="chap-next-t">{book.chapters[cur + 1].title}</span>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>
