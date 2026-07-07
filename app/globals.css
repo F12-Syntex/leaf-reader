@@ -405,9 +405,9 @@
 
   /* character-name mentions in narration, colored per-speaker (same --spk-h
      hue as their dialogue) instead of one flat accent color for everyone */
-  .chip-char { color: oklch(var(--say-l) var(--say-c) var(--spk-h, 28));
-    border-bottom-color: color-mix(in srgb, oklch(var(--say-l) var(--say-c) var(--spk-h, 28)) 65%, transparent); }
-  .chip-char:hover { background: color-mix(in srgb, oklch(var(--say-l) var(--say-c) var(--spk-h, 28)) 14%, transparent); }
+  .chip-char { color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248));
+    border-bottom-color: color-mix(in srgb, oklch(var(--say-l) var(--say-c) var(--spk-h, 248)) 65%, transparent); }
+  .chip-char:hover { background: color-mix(in srgb, oklch(var(--say-l) var(--say-c) var(--spk-h, 248)) 14%, transparent); }
 
   /* notable-object mentions ({item:...}) — a fixed motif color (not a
      per-character hue) so items read as their own visual category */
@@ -909,19 +909,19 @@
   .app[data-theme="sepia"] { --say-l: .47; --say-c: .12; }
   .app[data-theme="dark"]  { --say-l: .75; --say-c: .11; }
   .app[data-theme="oled"]  { --say-l: .78; --say-c: .12; }
-  .prose .say { color: oklch(var(--say-l) var(--say-c) var(--spk-h, 28)); }
+  .prose .say { color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248)); }
   .prose .say-unknown { color: color-mix(in srgb, var(--ink) 72%, var(--soft)); }
   .say-label { display: inline; margin-right: .42em; padding: .14em .5em .16em; border-radius: 6px;
     font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: .58em; font-weight: 700;
     letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; vertical-align: .16em; line-height: 1;
-    color: oklch(var(--say-l) var(--say-c) var(--spk-h, 28));
-    background: oklch(var(--say-l) var(--say-c) var(--spk-h, 28) / .13); }
+    color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248));
+    background: oklch(var(--say-l) var(--say-c) var(--spk-h, 248) / .13); }
   .prose.justify .say-label { letter-spacing: .07em; }
   /* speaker legend in the text-settings panel */
   .spk-legend { display: flex; flex-wrap: wrap; gap: 7px; }
   .spk-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink);
     border: 1px solid var(--hair); border-radius: 999px; padding: 5px 11px 5px 8px; background: var(--card); }
   .spk-dot { width: 9px; height: 9px; border-radius: 50%; flex: none;
-    background: oklch(var(--say-l) var(--say-c) var(--spk-h, 28)); }
+    background: oklch(var(--say-l) var(--say-c) var(--spk-h, 248)); }
 
   .cp-more { display: none; }

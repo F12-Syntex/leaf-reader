@@ -379,6 +379,8 @@ export default function ReaderView({ book }) {
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.tagName === 'INPUT') return;
+      /* never swallow browser/system shortcuts (Ctrl+C copy, Alt+arrows, ...) */
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (spread && (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown')) { e.preventDefault(); goPage(1); }
       else if (spread && (e.key === 'ArrowLeft' || e.key === 'PageUp')) { e.preventDefault(); goPage(-1); }
       else if (e.key === 'ArrowRight') goChap(cur + 1);
