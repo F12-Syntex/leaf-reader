@@ -878,6 +878,61 @@
   .lib-btn:hover { color: var(--ink); background: var(--field); }
   .lib-btn svg { width: 13px; height: 13px; }
 
+  /* ---------- instant lookup (practice directory) ---------- */
+  .lookup { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--line); }
+  .lookup-head { margin-bottom: 16px; }
+  .lookup-sub { margin-top: 8px; font-size: 13px; color: var(--soft); line-height: 1.55; max-width: 62ch; }
+  .lookup-box { display: flex; align-items: center; gap: 11px; padding: 0 15px;
+    border: 1px solid var(--line); border-radius: 14px; background: var(--card);
+    transition: border-color .2s, box-shadow .2s; }
+  .lookup-box:focus-within { border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent); }
+  .lookup-box > svg { width: 17px; height: 17px; color: var(--soft); flex: none; }
+  .lookup-input { flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+    color: var(--ink); font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 14.5px;
+    padding: 13px 0; }
+  .lookup-input::placeholder { color: var(--soft); opacity: .8; }
+  .lookup-clear { flex: none; width: 28px; height: 28px; border: none; border-radius: 50%; cursor: pointer;
+    display: grid; place-items: center; background: var(--field); color: var(--soft);
+    transition: background .15s, color .15s; }
+  .lookup-clear:hover { background: var(--field-h); color: var(--ink); }
+  .lookup-clear svg { width: 13px; height: 13px; }
+  .lookup-cats { display: flex; flex-wrap: wrap; gap: 7px; margin: 13px 0 4px; }
+  .lookup-cat { border: 1px solid var(--line); background: transparent; color: var(--soft); cursor: pointer;
+    font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 10.5px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; border-radius: 999px; padding: 6px 12px;
+    transition: color .18s, background .18s, border-color .18s; }
+  .lookup-cat:hover { color: var(--ink); background: var(--field); }
+  .lookup-cat.on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .lookup-list { margin-top: 11px; max-height: 384px; overflow-y: auto; display: flex;
+    flex-direction: column; gap: 7px; padding-right: 2px; scrollbar-width: thin; }
+  .lookup-row { display: flex; align-items: center; gap: 14px; padding: 11px 14px;
+    border: 1px solid var(--hair); border-radius: 13px; background: var(--card);
+    transition: border-color .15s, background .15s; }
+  .lookup-row.on { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); background: var(--field); }
+  .lookup-row-main { flex: 1; min-width: 0; }
+  .lookup-name { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+  .lookup-hl { background: color-mix(in srgb, var(--accent) 20%, transparent); color: inherit;
+    border-radius: 3px; padding: 0 1px; }
+  .lookup-badge { display: inline-block; margin-left: 9px; vertical-align: .12em;
+    font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--soft); background: var(--field-h); border-radius: 999px; padding: 2px 8px; }
+  .lookup-badge.c-urgent { color: #fff; background: #c2685f; }
+  .lookup-badge.c-hospital { color: var(--accent); background: color-mix(in srgb, var(--accent) 13%, transparent); }
+  .lookup-meta { margin-top: 3px; font-size: 12px; color: var(--soft); line-height: 1.45; }
+  .lookup-call { flex: none; display: inline-flex; align-items: center; gap: 7px;
+    border-radius: 999px; padding: 8px 14px; background: var(--field); color: var(--ink);
+    font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap;
+    transition: background .18s, color .18s; }
+  .lookup-call:hover { background: var(--accent); color: #fff; }
+  .lookup-call svg { width: 14px; height: 14px; }
+  .lookup-none { padding: 26px 10px; text-align: center; font-size: 13.5px; color: var(--soft); }
+  @media (max-width: 600px) {
+    .lookup-row { flex-direction: column; align-items: flex-start; gap: 9px; }
+    .lookup-call { align-self: stretch; justify-content: center; }
+  }
+
   /* ---------- mobile ---------- */
   @media (max-width: 600px) {
     .dock-col { bottom: 12px; width: calc(100vw - 16px); }

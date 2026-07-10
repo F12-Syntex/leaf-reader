@@ -6,6 +6,7 @@ import { APP_DEFAULTS } from '@/lib/constants';
 import { loadGlobal, loadBook, loadLib, saveLib } from '@/lib/storage';
 import { ICONS as I } from '@/components/icons';
 import BookCard from './BookCard';
+import InstantLookup from './InstantLookup';
 
 function bookStat(b) {
   const st = loadBook(b.id);
@@ -152,6 +153,8 @@ export default function LibraryView({ initialBooks }) {
               </div>
             </>
           )}
+
+          <InstantLookup />
         </div>
       </div>
     </div>
