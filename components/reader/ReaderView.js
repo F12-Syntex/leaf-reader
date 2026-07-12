@@ -877,7 +877,7 @@ export default function ReaderView({ book }) {
           wide={wide} font={font} setFont={setFont} />
       )}
 
-      {pop === 'ai' && <AiPanel chapter={ch} status={reanalyseStatus} onReanalyse={onReanalyse} />}
+      {pop === 'ai' && <AiPanel status={reanalyseStatus} onReanalyse={onReanalyse} />}
 
       {/* dock */}
         <div className="dock">
