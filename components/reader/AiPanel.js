@@ -8,19 +8,15 @@ import { ICONS as I } from '@/components/icons';
 export default function AiPanel({ chapter, status, onReanalyse }) {
   const busy = status === 'working';
   return (
-    <div className="panel">
-      <div className="pop-title">AI formatting</div>
-      <div className="ai-chap">
-        <div className="ai-chap-t">{chapter.title}</div>
-        <div className="ai-chap-s">
-          {chapter.unformatted ? 'Not processed yet' : `Relevance ${chapter.rel}/10`}
-        </div>
+    <div className="panel ai-panel" role="dialog" aria-labelledby="ai-panel-title">
+      <div className="ai-confirm">
+        <div id="ai-panel-title" className="ai-confirm-title">Reanalyse chapter?</div>
+        <div className="ai-confirm-sub">This replaces the current formatting for {chapter.title}.</div>
       </div>
       <button className={'ai-reanalyse' + (busy ? ' busy' : '')} onClick={onReanalyse} disabled={busy}>
-        {busy ? 'Reanalysing…' : <>{I.refresh} Reanalyse this chapter</>}
+        {busy ? 'Reanalysing…' : <>{I.refresh} Reanalyse</>}
       </button>
       {status === 'error' && <div className="ai-err">Reanalysis failed — try again.</div>}
-      <div className="ai-note">Re-runs this chapter through the AI formatting pass and overwrites its current formatting. Useful if a chapter came out under-formatted or you've changed formatting rules.</div>
     </div>
   );
 }

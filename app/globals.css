@@ -346,18 +346,20 @@
   @keyframes popin { from { transform: translateY(10px) scale(.97); } to { transform: none; } }
   .pop-title { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); margin: 2px 4px 14px; }
 
-  /* AI formatting panel */
-  .ai-chap { padding: 2px 4px 16px; border-bottom: 1px solid var(--hair); margin-bottom: 14px; }
-  .ai-chap-t { font-family: var(--serif); font-size: 17px; color: var(--ink); line-height: 1.2; margin-bottom: 4px; }
-  .ai-chap-s { font-size: 12px; color: var(--soft); }
-  .ai-reanalyse { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-    background: var(--accent); color: var(--pop-bg); border: none; border-radius: 12px;
-    padding: 12px; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+  /* Compact confirmation for re-running AI formatting. */
+  .ai-panel { width: min(360px, calc(100vw - 20px)); align-self: flex-end; padding: 13px 14px;
+    border-radius: 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+  .ai-confirm { min-width: 0; }
+  .ai-confirm-title { color: var(--ink); font-size: 13.5px; font-weight: 600; }
+  .ai-confirm-sub { margin-top: 2px; color: var(--soft); font-size: 11.5px; line-height: 1.35;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ai-reanalyse { display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: var(--accent); color: var(--pop-bg); border: none; border-radius: 9px;
+    padding: 8px 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity .15s; white-space: nowrap; }
   .ai-reanalyse svg { width: 16px; height: 16px; }
   .ai-reanalyse:hover { opacity: .88; }
   .ai-reanalyse.busy, .ai-reanalyse:disabled { opacity: .55; cursor: default; }
-  .ai-err { font-size: 12px; color: #d15353; margin: 10px 4px 0; }
-  .ai-note { font-size: 11.5px; color: var(--soft); line-height: 1.5; margin: 12px 4px 0; }
+  .ai-err { grid-column: 1 / -1; font-size: 11.5px; color: #d15353; }
 
   /* theme picker */
   .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -403,16 +405,14 @@
   .chip-money { border-bottom-style: dashed; }
   .chip:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 
-  /* character-name mentions in narration, colored per-speaker (same --spk-h
-     hue as their dialogue) instead of one flat accent color for everyone */
-  .chip-char { color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248));
-    border-bottom-color: color-mix(in srgb, oklch(var(--say-l) var(--say-c) var(--spk-h, 248)) 65%, transparent); }
-  .chip-char:hover { background: color-mix(in srgb, oklch(var(--say-l) var(--say-c) var(--spk-h, 248)) 14%, transparent); }
+  /* Character names stay in the body colour; the underline preserves their
+     interactive affordance without turning prose into a colour map. */
+  .chip-char { color: inherit; border-bottom-color: color-mix(in srgb, var(--ink) 28%, transparent); }
+  .chip-char:hover { background: var(--field); }
 
-  /* notable-object mentions ({item:...}) — a fixed motif color (not a
-     per-character hue) so items read as their own visual category */
-  .chip-item { cursor: text; border-bottom-style: solid;
-    color: oklch(0.62 0.1 200); border-bottom-color: color-mix(in srgb, oklch(0.62 0.1 200) 55%, transparent); }
+  /* Notable objects use the same restrained treatment as character names. */
+  .chip-item { cursor: text; border-bottom-style: solid; color: inherit;
+    border-bottom-color: color-mix(in srgb, var(--ink) 28%, transparent); }
 
   .inline-pop { position: absolute; z-index: 66; width: 312px; background: var(--pop-bg);
     border: 1px solid var(--dock-bd); border-radius: 18px; box-shadow: var(--shadow); padding: 16px;
@@ -525,7 +525,7 @@
   .app[data-theme="sepia"] { --fx-scream: #93251c; --fx-cold: #4d6377; --fx-warm: #96671d; }
   .app[data-theme="dark"], .app[data-theme="oled"] { --fx-scream: #e0584a; --fx-cold: #7da3c4; --fx-warm: #d9a45c; }
   .fx { border-radius: 2px; }
-  .fx-scream { color: var(--fx-scream); font-weight: 600; letter-spacing: .03em; }
+  .fx-scream { color: inherit; font-weight: 600; letter-spacing: .03em; }
   .fx-tremble { display: inline-block; }
   @media (prefers-reduced-motion: no-preference) {
     .fx-scream.fx-live { animation: screamflash .9s ease-out 1; }
@@ -536,10 +536,10 @@
     100% { text-shadow: 0 0 0 transparent; } }
   @keyframes tremor { 0% { transform: translate(0, 0); } 25% { transform: translate(.6px, -.4px); }
     50% { transform: translate(-.6px, .4px); } 75% { transform: translate(.4px, .4px); } 100% { transform: translate(0, 0); } }
-  .fx-tremble { color: color-mix(in srgb, var(--fx-scream) 70%, var(--ink)); font-style: italic; }
+  .fx-tremble { color: inherit; font-style: italic; }
   .fx-whisper { opacity: .62; font-style: italic; letter-spacing: .07em; }
-  .fx-cold { color: var(--fx-cold); letter-spacing: .04em; }
-  .fx-glow { color: var(--accent); text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent); }
+  .fx-cold { color: inherit; letter-spacing: .04em; }
+  .fx-glow { color: inherit; font-weight: 500; }
   .fx-fade { background: linear-gradient(90deg, var(--ink) 20%, color-mix(in srgb, var(--ink) 16%, transparent));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 
@@ -549,18 +549,16 @@
   .app[data-theme="dark"], .app[data-theme="oled"] { --fx-blood: #d4544a; --fx-divine: #d9b968; --fx-shadow: #9a90b8; --fx-mind: #a794d6; }
   .fx-echo { font-style: italic; opacity: .85;
     text-shadow: 3px 0 0 color-mix(in srgb, var(--ink) 18%, transparent), 6px 0 0 color-mix(in srgb, var(--ink) 8%, transparent); }
-  .fx-chant { font-variant: small-caps; letter-spacing: .14em; color: var(--fx-mind);
+  .fx-chant { font-variant: small-caps; letter-spacing: .14em; color: inherit;
     font-weight: 500; }
-  .fx-blood { color: var(--fx-blood); font-weight: 600; }
-  .fx-divine { color: var(--fx-divine); font-weight: 500;
-    text-shadow: 0 0 14px color-mix(in srgb, var(--fx-divine) 50%, transparent); }
-  .fx-shadow { color: var(--fx-shadow);
-    text-shadow: 0 0 10px color-mix(in srgb, var(--fx-shadow) 55%, transparent); }
+  .fx-blood { color: inherit; font-weight: 600; }
+  .fx-divine { color: inherit; font-weight: 500; }
+  .fx-shadow { color: inherit; opacity: .82; }
   .fx-thunder { font-weight: 800; letter-spacing: .05em; }
   .fx-ancient { font-variant: small-caps; letter-spacing: .1em; opacity: .82;
     border-bottom: 1px dotted color-mix(in srgb, var(--ink) 35%, transparent); }
   .fx-tiny { font-size: .8em; opacity: .7; font-style: italic; }
-  .fx-mind { color: var(--fx-mind); font-style: italic; letter-spacing: .03em; }
+  .fx-mind { color: inherit; font-style: italic; letter-spacing: .03em; }
   @media (prefers-reduced-motion: no-preference) {
     .fx-thunder.fx-live { animation: tremor .14s linear 4; }
     .fx-divine.fx-live, .fx-shadow.fx-live { animation: fxbloom 1.4s ease-out 1; }
@@ -909,13 +907,11 @@
   .app[data-theme="sepia"] { --say-l: .47; --say-c: .12; }
   .app[data-theme="dark"]  { --say-l: .75; --say-c: .11; }
   .app[data-theme="oled"]  { --say-l: .78; --say-c: .12; }
-  .prose .say { color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248)); }
-  .prose .say-unknown { color: color-mix(in srgb, var(--ink) 72%, var(--soft)); }
+  .prose .say, .prose .say-unknown { color: inherit; }
   .say-label { display: inline; margin-right: .42em; padding: .14em .5em .16em; border-radius: 6px;
     font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: .58em; font-weight: 700;
     letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; vertical-align: .16em; line-height: 1;
-    color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248));
-    background: oklch(var(--say-l) var(--say-c) var(--spk-h, 248) / .13); }
+    color: var(--soft); background: var(--field); border: 1px solid var(--hair); }
   .prose.justify .say-label { letter-spacing: .07em; }
   /* speaker legend in the text-settings panel */
   .spk-legend { display: flex; flex-wrap: wrap; gap: 7px; }
