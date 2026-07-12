@@ -1,6 +1,6 @@
 {
   "name": "leaf-reader",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "A book reading app with restrained per-chapter formatting (speaker labels, character cards, scenes, footnotes) and an offline /addbook pipeline for turning epub/pdf/txt sources into readable books.",
   "private": true,
   "scripts": {

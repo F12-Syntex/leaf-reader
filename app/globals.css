@@ -401,14 +401,20 @@
   .chip-money { border-bottom-style: dashed; }
   .chip:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 
-  /* Character names stay in the body colour; the underline preserves their
-     interactive affordance without turning prose into a colour map. */
-  .chip-char { color: inherit; border-bottom-color: color-mix(in srgb, var(--ink) 28%, transparent); }
-  .chip-char:hover { background: var(--field); }
+  /* Names carry their stable character colour, but only the name itself—not
+     the surrounding dialogue or narration—so attribution remains scannable. */
+  .chip-char { color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248));
+    border-bottom-color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248) / .42); }
+  .chip-char:hover { background: oklch(var(--say-l) var(--say-c) var(--spk-h, 248) / .1); }
 
-  /* Notable objects use the same restrained treatment as character names. */
-  .chip-item { cursor: text; border-bottom-style: solid; color: inherit;
-    border-bottom-color: color-mix(in srgb, var(--ink) 28%, transparent); }
+  /* Objects share one motif colour so they are distinct from people without
+     introducing a new hue for every noun. */
+  .app[data-theme="paper"] { --item: #39777a; }
+  .app[data-theme="sepia"] { --item: #4c7470; }
+  .app[data-theme="dark"], .app[data-theme="oled"] { --item: #74aeb0; }
+  .chip-item { cursor: text; border-bottom-style: solid;
+    color: color-mix(in srgb, var(--item) 78%, var(--ink));
+    border-bottom-color: color-mix(in srgb, var(--item) 48%, transparent); }
 
   .inline-pop { position: absolute; z-index: 66; width: 312px; background: var(--pop-bg);
     border: 1px solid var(--dock-bd); border-radius: 18px; box-shadow: var(--shadow); padding: 16px;
@@ -521,7 +527,7 @@
   .app[data-theme="sepia"] { --fx-scream: #93251c; --fx-cold: #4d6377; --fx-warm: #96671d; }
   .app[data-theme="dark"], .app[data-theme="oled"] { --fx-scream: #e0584a; --fx-cold: #7da3c4; --fx-warm: #d9a45c; }
   .fx { border-radius: 2px; }
-  .fx-scream { color: inherit; font-weight: 600; letter-spacing: .03em; }
+  .fx-scream { color: color-mix(in srgb, var(--fx-scream) 78%, var(--ink)); font-weight: 600; letter-spacing: .03em; }
   .fx-tremble { display: inline-block; }
   @media (prefers-reduced-motion: no-preference) {
     .fx-scream.fx-live { animation: screamflash .9s ease-out 1; }
@@ -532,10 +538,11 @@
     100% { text-shadow: 0 0 0 transparent; } }
   @keyframes tremor { 0% { transform: translate(0, 0); } 25% { transform: translate(.6px, -.4px); }
     50% { transform: translate(-.6px, .4px); } 75% { transform: translate(.4px, .4px); } 100% { transform: translate(0, 0); } }
-  .fx-tremble { color: inherit; font-style: italic; }
+  .fx-tremble { color: color-mix(in srgb, var(--fx-scream) 62%, var(--ink)); font-style: italic; }
   .fx-whisper { opacity: .62; font-style: italic; letter-spacing: .07em; }
-  .fx-cold { color: inherit; letter-spacing: .04em; }
-  .fx-glow { color: inherit; font-weight: 500; }
+  .fx-cold { color: color-mix(in srgb, var(--fx-cold) 72%, var(--ink)); letter-spacing: .04em; }
+  .fx-glow { color: color-mix(in srgb, var(--accent) 72%, var(--ink)); font-weight: 500;
+    text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 24%, transparent); }
   .fx-fade { background: linear-gradient(90deg, var(--ink) 20%, color-mix(in srgb, var(--ink) 16%, transparent));
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 
@@ -545,16 +552,18 @@
   .app[data-theme="dark"], .app[data-theme="oled"] { --fx-blood: #d4544a; --fx-divine: #d9b968; --fx-shadow: #9a90b8; --fx-mind: #a794d6; }
   .fx-echo { font-style: italic; opacity: .85;
     text-shadow: 3px 0 0 color-mix(in srgb, var(--ink) 18%, transparent), 6px 0 0 color-mix(in srgb, var(--ink) 8%, transparent); }
-  .fx-chant { font-variant: small-caps; letter-spacing: .14em; color: inherit;
+  .fx-chant { font-variant: small-caps; letter-spacing: .14em;
+    color: color-mix(in srgb, var(--fx-mind) 68%, var(--ink));
     font-weight: 500; }
-  .fx-blood { color: inherit; font-weight: 600; }
-  .fx-divine { color: inherit; font-weight: 500; }
-  .fx-shadow { color: inherit; opacity: .82; }
+  .fx-blood { color: color-mix(in srgb, var(--fx-blood) 78%, var(--ink)); font-weight: 600; }
+  .fx-divine { color: color-mix(in srgb, var(--fx-divine) 76%, var(--ink)); font-weight: 500;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--fx-divine) 22%, transparent); }
+  .fx-shadow { color: color-mix(in srgb, var(--fx-shadow) 66%, var(--ink)); opacity: .88; }
   .fx-thunder { font-weight: 800; letter-spacing: .05em; }
   .fx-ancient { font-variant: small-caps; letter-spacing: .1em; opacity: .82;
     border-bottom: 1px dotted color-mix(in srgb, var(--ink) 35%, transparent); }
   .fx-tiny { font-size: .8em; opacity: .7; font-style: italic; }
-  .fx-mind { color: inherit; font-style: italic; letter-spacing: .03em; }
+  .fx-mind { color: color-mix(in srgb, var(--fx-mind) 68%, var(--ink)); font-style: italic; letter-spacing: .03em; }
   @media (prefers-reduced-motion: no-preference) {
     .fx-thunder.fx-live { animation: tremor .14s linear 4; }
     .fx-divine.fx-live, .fx-shadow.fx-live { animation: fxbloom 1.4s ease-out 1; }
@@ -899,15 +908,17 @@
 
   /* ---------- Rich formatting: speaker-attributed dialogue ---------- */
   /* theme-aware lightness/chroma; hue is per-speaker via --spk-h */
-  .app[data-theme="paper"] { --say-l: .52; --say-c: .13; }
-  .app[data-theme="sepia"] { --say-l: .47; --say-c: .12; }
-  .app[data-theme="dark"]  { --say-l: .75; --say-c: .11; }
-  .app[data-theme="oled"]  { --say-l: .78; --say-c: .12; }
+  .app[data-theme="paper"] { --say-l: .50; --say-c: .10; }
+  .app[data-theme="sepia"] { --say-l: .46; --say-c: .09; }
+  .app[data-theme="dark"]  { --say-l: .73; --say-c: .09; }
+  .app[data-theme="oled"]  { --say-l: .76; --say-c: .10; }
   .prose .say, .prose .say-unknown { color: inherit; }
   .say-label { display: inline; margin-right: .42em; padding: .14em .5em .16em; border-radius: 6px;
     font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: .58em; font-weight: 700;
     letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; vertical-align: .16em; line-height: 1;
-    color: var(--soft); background: var(--field); border: 1px solid var(--hair); }
+    color: oklch(var(--say-l) var(--say-c) var(--spk-h, 248));
+    background: oklch(var(--say-l) var(--say-c) var(--spk-h, 248) / .1);
+    border: 1px solid oklch(var(--say-l) var(--say-c) var(--spk-h, 248) / .2); }
   .prose.justify .say-label { letter-spacing: .07em; }
   /* speaker legend in the text-settings panel */
   .spk-legend { display: flex; flex-wrap: wrap; gap: 7px; }
